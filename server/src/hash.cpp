@@ -1,4 +1,4 @@
-#include "hash.h"
+#include "Hash.h"
 #include <vector>
 #include <sstream>
 #include <iomanip>

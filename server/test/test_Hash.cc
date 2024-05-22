@@ -1,4 +1,4 @@
-#include "hash.h"
+#include "Hash.h"
 #include "gtest/gtest.h"
 
 TEST(Test_Hash, test_Hash_original) {

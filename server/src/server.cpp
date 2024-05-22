@@ -1,5 +1,5 @@
 #include "CarPool.h"
-#include "hash.h"
+#include "Hash.h"
 #include <iostream>
 
 int main() {
