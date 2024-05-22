@@ -11,3 +11,7 @@ build/
 *.log
 *.vspscc
 out/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+CTestTestfile.cmake
