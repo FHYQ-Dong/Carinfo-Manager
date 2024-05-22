@@ -1,0 +1,5 @@
+add_test( Test_Hash.test_Hash_original /home/fhyq/Program/Carinfo-Manager/server/test/test_Hash [==[--gtest_filter=Test_Hash.test_Hash_original]==] --gtest_also_run_disabled_tests)
+set_tests_properties( Test_Hash.test_Hash_original PROPERTIES WORKING_DIRECTORY /home/fhyq/Program/Carinfo-Manager/server/test SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+add_test( Test_Hash.test_Hash_salt /home/fhyq/Program/Carinfo-Manager/server/test/test_Hash [==[--gtest_filter=Test_Hash.test_Hash_salt]==] --gtest_also_run_disabled_tests)
+set_tests_properties( Test_Hash.test_Hash_salt PROPERTIES WORKING_DIRECTORY /home/fhyq/Program/Carinfo-Manager/server/test SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+set( test_Hash_TESTS Test_Hash.test_Hash_original Test_Hash.test_Hash_salt)

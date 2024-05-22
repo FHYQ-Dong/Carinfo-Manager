@@ -1,0 +1,5 @@
+if(EXISTS "/home/fhyq/Program/Carinfo-Manager/server/test/test_Hash[1]_tests.cmake")
+  include("/home/fhyq/Program/Carinfo-Manager/server/test/test_Hash[1]_tests.cmake")
+else()
+  add_test(test_Hash_NOT_BUILT test_Hash_NOT_BUILT)
+endif()

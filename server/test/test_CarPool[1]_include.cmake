@@ -1,0 +1,5 @@
+if(EXISTS "/home/fhyq/Program/Carinfo-Manager/server/test/test_CarPool[1]_tests.cmake")
+  include("/home/fhyq/Program/Carinfo-Manager/server/test/test_CarPool[1]_tests.cmake")
+else()
+  add_test(test_CarPool_NOT_BUILT test_CarPool_NOT_BUILT)
+endif()
