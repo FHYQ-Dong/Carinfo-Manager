@@ -1,7 +1,0 @@
-add_test( Test_CarPool.test_CarPool_getCarbyId /home/fhyq/Program/Carinfo-Manager/server/test/test_CarPool [==[--gtest_filter=Test_CarPool.test_CarPool_getCarbyId]==] --gtest_also_run_disabled_tests)
-set_tests_properties( Test_CarPool.test_CarPool_getCarbyId PROPERTIES WORKING_DIRECTORY /home/fhyq/Program/Carinfo-Manager/server/test SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
-add_test( Test_CarPool.test_CarPool_getCarbyColor /home/fhyq/Program/Carinfo-Manager/server/test/test_CarPool [==[--gtest_filter=Test_CarPool.test_CarPool_getCarbyColor]==] --gtest_also_run_disabled_tests)
-set_tests_properties( Test_CarPool.test_CarPool_getCarbyColor PROPERTIES WORKING_DIRECTORY /home/fhyq/Program/Carinfo-Manager/server/test SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
-add_test( Test_CarPool.test_CarPool_getCarbyType /home/fhyq/Program/Carinfo-Manager/server/test/test_CarPool [==[--gtest_filter=Test_CarPool.test_CarPool_getCarbyType]==] --gtest_also_run_disabled_tests)
-set_tests_properties( Test_CarPool.test_CarPool_getCarbyType PROPERTIES WORKING_DIRECTORY /home/fhyq/Program/Carinfo-Manager/server/test SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
-set( test_CarPool_TESTS Test_CarPool.test_CarPool_getCarbyId Test_CarPool.test_CarPool_getCarbyColor Test_CarPool.test_CarPool_getCarbyType)
