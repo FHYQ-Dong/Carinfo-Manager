@@ -1,3 +1,16 @@
 .vs
 .vscode
 build/
+.vs
+.vscode
+build/
+*.suo
+*.user
+*.sln.docstates
+*.pdb
+*.obj
+*.exe
+*.cache
+*.log
+*.vspscc
+out/
