@@ -9,5 +9,6 @@ int main() {
     std::cout << "Hash of 'Hello, World!': " << hashObj.getHash() << std::endl;
     hashObj.setSalt("salt");
     std::cout << "Hash of 'Hello, World!': " << hashObj.getHash() << std::endl;
+    std::cout << "length of hash: " << hashObj.getHash().length() << std::endl;
     return 0;
 }
