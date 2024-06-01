@@ -171,6 +171,30 @@ TEST(Test_AccountPool, test_AccountPool_verifyAccount) {
     EXPECT_EQ(accountpool.verifyAccount(6, hash3.getHash()), AccountPool::AccountVerifyResult::ACCOUNT_NOT_FOUND);
 }
 
+TEST(Test_AccountPool, test_AccountPool_save) {
+    AccountPool accountpool;
+    Hash hash1("password1", "salt1"), hash2("password2", "salt2"), hash3("password3", "salt3");
+    Account acc1(1, "admin1", hash1.getHash(), Account::AccountType::ADMIN);
+    Account acc2(2, "user1", hash2.getHash(), Account::AccountType::USER);
+    Account acc3(3, "user2", hash3.getHash(), Account::AccountType::USER);
+    EXPECT_EQ(accountpool.addAccount(acc1), 0);
+    EXPECT_EQ(accountpool.addAccount(acc2), 0);
+    EXPECT_EQ(accountpool.addAccount(acc3), 0);
+    EXPECT_EQ(accountpool.size(), 3);
+    EXPECT_FALSE(accountpool.empty());
+    ASSERT_EQ(accountpool.save("test_AccountPool_save.dat"), 0);
+}
+
+TEST(Test_AccountPool, test_AccountPool_load) {
+    AccountPool accountpool;
+    ASSERT_EQ(accountpool.load("test_AccountPool_save.dat"), 0);
+    EXPECT_EQ(accountpool.size(), 3);
+    EXPECT_FALSE(accountpool.empty());
+    EXPECT_EQ(accountpool.getAccount(1).getUsername(), "admin1");
+    EXPECT_EQ(accountpool.getAccount(2).getUsername(), "user1");
+    EXPECT_EQ(accountpool.getAccount(3).getUsername(), "user2");
+}
+
 TEST(Test_AccountPool, test_AccountPool_operator_eq) {
     AccountPool accountpool1;
     Hash hash1("password1", "salt1"), hash2("password2", "salt2"), hash3("password3", "salt3");

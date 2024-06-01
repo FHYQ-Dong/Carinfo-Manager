@@ -39,6 +39,7 @@ class Car {
         std::string getId() const;
         std::string getType() const;
         Color getColor() const;
+
         bool operator == (const Car& c) const;
         bool operator != (const Car& c) const;
         bool operator < (const Car& c) const;
@@ -69,6 +70,11 @@ class CarPool : public BasicPool {
         CarPool getCarbyType(const std::string& type) const;
         size_t size() const;
         bool empty() const ;
+        int clear();
+        int load(std::string filename);
+        int save(std::string filename) const;
+        std::vector<Car> list() const;
+
         bool operator == (const CarPool& cp) const;
         bool operator != (const CarPool& cp) const;
         CarPool& operator = (const CarPool& cp);

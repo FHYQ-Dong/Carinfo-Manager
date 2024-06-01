@@ -141,6 +141,27 @@ TEST(Test_CarPool, test_CarPool_getCarbyType) {
     EXPECT_TRUE(hatchbacks == hatchbacksExpected);
 }
 
+TEST(Test_CarPool, test_CarPool_save) {
+    CarPool carpool;
+    Car car1("京A12345", "SUV", Color(255, 0, 0));
+    Car car2("京B67890", "Sedan", Color(0, 255, 0));
+    Car car3("京C24680", "Hatchback", Color(0, 0, 255));
+    EXPECT_EQ(carpool.addCar(car1), 0);
+    EXPECT_EQ(carpool.addCar(car2), 0);
+    EXPECT_EQ(carpool.addCar(car3), 0);
+    ASSERT_EQ(carpool.save("test_CarPool_save.dat"), 0);
+}
+
+TEST(Test_CarPool, test_CarPool_load) {
+    CarPool carpool;
+    ASSERT_EQ(carpool.load("test_CarPool_save.dat"), 0);
+    EXPECT_EQ(carpool.size(), 3);
+    EXPECT_FALSE(carpool.empty());
+    EXPECT_TRUE(carpool.getCarbyId("京A12345") == Car("京A12345", "SUV", Color(255, 0, 0)));
+    EXPECT_TRUE(carpool.getCarbyId("京B67890") == Car("京B67890", "Sedan", Color(0, 255, 0)));
+    EXPECT_TRUE(carpool.getCarbyId("京C24680") == Car("京C24680", "Hatchback", Color(0, 0, 255)));
+}
+
 TEST(Test_CarPool, test_CarPool_operator_eq) {
     CarPool carpool1, carpool2;
     Car car1("京A12345", "SUV", Color(255, 0, 0));

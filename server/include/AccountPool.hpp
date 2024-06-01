@@ -84,6 +84,11 @@ class AccountPool : public BasicPool{
         AccountVerifyResult verifyAccount(uint32_t account_id, std::string passwd_hash) const;
         size_t size() const;
         bool empty() const;
+        int clear();
+        int load(std::string filename);
+        int save(std::string filename) const;
+        std::vector<Account> list() const;
+
         bool operator == (const AccountPool& ap) const;
         bool operator != (const AccountPool& ap) const;
         AccountPool& operator = (const AccountPool& ap);

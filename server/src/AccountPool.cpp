@@ -1,5 +1,6 @@
 #include "AccountPool.hpp"
 #include <assert.h>
+#include <fstream>
 
 Account::Account() {
     // Default constructor
@@ -263,6 +264,115 @@ size_t AccountPool::size() const {
 
 bool AccountPool::empty() const {
     return sz == 0;
+}
+
+int AccountPool::clear() {
+    try {
+        accountpool.clear();
+        adminpool.clear();
+        userpool.clear();
+        sz = 0;
+        return 0;
+    }
+    catch (...) {
+        return 1;
+    }
+}
+
+int AccountPool::load(std::string filename) {
+    if (filename == "") return 1;
+    std::fstream file;
+    file.open(filename, std::ios::in | std::ios::binary);
+    if (!file.is_open()) return 1;
+    try {
+        if (clear()) {
+            file.close();
+            return 1;
+        }
+        // Read size
+        size_t sz_tmp = 0;
+        file.read((char*)&sz_tmp, sizeof(size_t));
+        for (size_t i = 0; i < sz_tmp; i++) {
+            // Read one Account
+            uint32_t account_id;
+            std::string username, passwd_hash;
+            char acc_type;
+            // Read account_id
+            file.read((char*)&account_id, sizeof(uint32_t));
+            // Read username
+            size_t username_len = 0;
+            file.read((char*)&username_len, sizeof(size_t));
+            char* username_buf = new char[username_len + 1];
+            file.read(username_buf, username_len * sizeof(char));
+            username_buf[username_len] = '\0';
+            username = std::string(username_buf);
+            delete[] username_buf;
+            // Read passwd_hash
+            size_t passwd_hash_len = 0;
+            file.read((char*)&passwd_hash_len, sizeof(size_t));
+            char* passwd_hash_buf = new char[passwd_hash_len + 1];
+            file.read(passwd_hash_buf, passwd_hash_len * sizeof(char));
+            passwd_hash_buf[passwd_hash_len] = '\0';
+            passwd_hash = std::string(passwd_hash_buf);
+            delete[] passwd_hash_buf;
+            // Read account_type
+            file.read(&acc_type, sizeof(char));
+            Account acc(account_id, username, passwd_hash, (Account::AccountType)acc_type);
+            if (addAccount(acc)) {
+                file.close();
+                return 1;
+            }
+        }
+        file.close();
+        return 0;
+    }
+    catch (...) {
+        file.close();
+        return 1;
+    }
+}
+
+int AccountPool::save(std::string filename) const {
+    if (filename == "") return 1;
+    std::fstream file;
+    file.open(filename, std::ios::out | std::ios::binary);
+    if (!file.is_open()) return 1;
+    try {
+        // Write size
+        file.write((char*)&sz, sizeof(size_t));
+        for (auto it = accountpool.begin(); it != accountpool.end(); it++) {
+            // Save one Account
+            Account acc = it->second;
+            // Write account_id
+            uint32_t account_id = acc.getAccountId();
+            file.write((char*)&account_id, sizeof(uint32_t));
+            // Write username
+            size_t username_len = acc.getUsername().length();
+            file.write((char*)&username_len, sizeof(size_t));
+            file.write(acc.getUsername().c_str(), username_len * sizeof(char));
+            // Write passwd_hash
+            size_t passwd_hash_len = acc.getPasswdHash().length();
+            file.write((char*)&passwd_hash_len, sizeof(size_t));
+            file.write(acc.getPasswdHash().c_str(), acc.getPasswdHash().length() * sizeof(char));
+            // Write account_type
+            char acc_type = (char)acc.getAccountType();
+            file.write(&acc_type, sizeof(char));
+        }
+        file.close();
+        return 0;
+    }
+    catch (...) {
+        file.close();
+        return 1;
+    }
+}
+
+std::vector<Account> AccountPool::list() const {
+    std::vector<Account> accounts;
+    for (auto it = accountpool.begin(); it != accountpool.end(); it++) {
+        accounts.push_back(it->second);
+    }
+    return accounts;
 }
 
 bool AccountPool::operator == (const AccountPool& ap) const {

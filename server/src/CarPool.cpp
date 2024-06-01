@@ -1,4 +1,5 @@
 #include "CarPool.hpp"
+#include <fstream>
 
 Color::Color() : red(0), green(0), blue(0) {
     // Default constructor
@@ -267,6 +268,107 @@ size_t CarPool::size() const {
 
 bool CarPool::empty() const {
     return sz == 0;
+}
+
+int CarPool::clear() {
+    try {
+        carpool_byid.clear();
+        carpool_bycolor.clear();
+        carpool_bytype.clear();
+        sz = 0;
+        return 0;
+    }
+    catch (...) {
+        return 1;
+    }
+}
+
+int CarPool::load(std::string filename) {
+    if (filename == "") return 1;
+    std::fstream file;
+    file.open(filename, std::ios::in | std::ios::binary);
+    if (!file.is_open()) return 1;
+    try {
+        if(clear()) {
+            file.close();
+            return 1;
+        }
+        // Read size
+        size_t sz_tmp = 0;
+        file.read((char*)&sz_tmp, sizeof(size_t));
+        for (size_t i = 0; i < sz_tmp; i++) {
+            // Load one Car
+            std::string id, type;
+            Color color;
+            // read car_id
+            size_t id_len = 0;
+            file.read((char*)&id_len, sizeof(size_t));
+            char* id_buf = new char[id_len + 1];
+            file.read(id_buf, id_len * sizeof(char));
+            id_buf[id_len] = '\0';
+            id = id_buf;
+            delete[] id_buf;
+            // read car_type
+            size_t type_len = 0;
+            file.read((char*)&type_len, sizeof(size_t));
+            char* type_buf = new char[type_len + 1];
+            file.read(type_buf, type_len * sizeof(char));
+            type_buf[type_len] = '\0';
+            type = type_buf;
+            delete[] type_buf;
+            // read car_color
+            file.read((char*)&color, sizeof(Color));
+            Car car(id, type, color);
+            if (addCar(car)) {
+                file.close();
+                return 1;
+            }
+        }
+        file.close();
+        return 0;
+    }
+    catch (...) {
+        file.close();
+        return 1;
+    }
+}
+
+int CarPool::save(std::string filename) const {
+    if (filename == "") return 1;
+    std::fstream file;
+    file.open(filename, std::ios::out | std::ios::binary);
+    if (!file.is_open()) return 1;
+    try {
+        // Write size
+        file.write((char*)&sz, sizeof(size_t));
+        for (auto it = carpool_byid.begin(); it != carpool_byid.end(); it++) {
+            // Save one Car
+            Car car = it->second;
+            // write car_id
+            size_t len = car.getId().length();
+            file.write((char*)&len, sizeof(size_t));
+            file.write(car.getId().c_str(), len * sizeof(char));
+            // write car_type
+            len = car.getType().length();
+            file.write((char*)&len, sizeof(size_t));
+            file.write(car.getType().c_str(), len * sizeof(char));
+            // write car_color
+            Color color = car.getColor();
+            file.write((char*)&color, sizeof(Color));
+        }
+        file.close();
+        return 0;
+    }
+    catch (...) {
+        file.close();
+        return 1;
+    }
+}
+
+std::vector<Car> CarPool::list() const {
+    std::vector<Car> cars;
+    for (auto it = carpool_byid.begin(); it != carpool_byid.end(); it++) cars.push_back(it->second);
+    return cars;
 }
 
 bool CarPool::operator == (const CarPool& cp) const {
