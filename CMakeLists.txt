@@ -27,13 +27,13 @@ list(REMOVE_ITEM SOURCES "src/server.cpp" "src/client.cpp")
 
 # Add your header filessource directory here
 include_directories(include)
-include_directories(${WORKFLOW_DIR}/src/include)
 
 # Add executable target
 add_executable(Carinfo-Manager-Server src/server.cpp ${SOURCES})
 target_link_libraries(Carinfo-Manager-Server libhttp)
 
 add_executable(Carinfo-Manager-Client src/client.cpp ${SOURCES})
+target_link_libraries(Carinfo-Manager-Client libhttp)
 
 # Link Libraries
 # TARGET_LINK_LIBRARIES(${PROJECT_NAME} ws2_32.lib)

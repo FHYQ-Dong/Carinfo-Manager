@@ -1,6 +1,6 @@
 #pragma once
 #pragma execution_character_set("utf-8")
-#include "BasicPool.hpp"
+#include "carinfo-manager/basicpool.hpp"
 #include <string>
 #include <cstdint>
 #include <map>
@@ -16,26 +16,23 @@ class Account {
         };
 
     private:
-        uint64_t account_id;
         std::string username;
         std::string passwd_hash;
         AccountType account_type;
 
     public:
         Account();
-        Account(uint64_t account_id, std::string username, std::string passwd_hash, AccountType account_type);
+        Account(const std::string& username, const std::string& passwd_hash, const AccountType& account_type);
         Account(const Account& acc);
         ~Account();
-        uint64_t getAccountId() const;
         std::string getUsername() const;
         std::string getPasswdHash() const;
         AccountType getAccountType() const;
         bool is_admin() const;
         bool is_user() const;
-        void setAccountId(uint64_t account_id);
-        void setUsername(std::string username); 
-        void setPasswdHash(std::string passwd_hash);
-        void setAccountType(AccountType account_type);
+        void setUsername(const std::string& username);
+        void setPasswdHash(const std::string& passwd_hash);
+        void setAccountType(const AccountType& account_type);
 
         bool operator == (const Account& acc) const;
         bool operator != (const Account& acc) const;
@@ -47,16 +44,6 @@ class Account {
         const static Account NULL_ACCOUNT;
 };
 
-class AccountGenerator {
-    private:
-        uint64_t next_admin_id, next_user_id;
-    public:
-        AccountGenerator();
-        AccountGenerator(uint64_t next_admin_id, uint64_t next_user_id);
-        ~AccountGenerator();
-        Account newAccount(Account::AccountType account_type);
-};
-
 class AccountPool : public BasicPool{
     public:
         enum class AccountVerifyResult {
@@ -66,27 +53,27 @@ class AccountPool : public BasicPool{
         };
 
     private:
-        std::map<uint64_t, Account> accountpool;
-        std::map<uint64_t, Account> adminpool;
-        std::map<uint64_t, Account> userpool;
+        std::map<std::string, Account> accountpool;
+        std::map<std::string, Account> adminpool;
+        std::map<std::string, Account> userpool;
 
     public:
         AccountPool();
         AccountPool(Account* begin, Account* end);
-        AccountPool(std::vector<Account> accounts);
+        AccountPool(const std::vector<Account>& accounts);
         AccountPool(const AccountPool& ap);
         ~AccountPool();
-        int addAccount(Account acc);
-        int removeAccount(uint64_t account_id);
-        int removeAccount(Account acc);
-        int updateAccount(uint64_t account_id, Account acc);
-        Account getAccount(uint64_t account_id) const;
-        AccountVerifyResult verifyAccount(uint64_t account_id, std::string passwd_hash) const;
+        int addAccount(const Account& acc);
+        int removeAccount(const std::string& username);
+        int removeAccount(const Account& acc);
+        int updateAccount(const Account& original_acc, const Account& new_acc);
+        Account getAccount(const std::string& username) const;
+        AccountVerifyResult verifyAccount(const std::string& username, const std::string& passwd_hash) const;
         size_t size() const;
         bool empty() const;
         int clear();
-        int load(std::string filename);
-        int save(std::string filename) const;
+        int load(std::istream& is);
+        int save(std::ostream& os) const;
         std::vector<Account> list() const;
 
         bool operator == (const AccountPool& ap) const;

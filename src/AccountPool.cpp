@@ -1,19 +1,17 @@
-#include "AccountPool.hpp"
+#include "carinfo-manager/accountpool.hpp"
 #include <assert.h>
 #include <fstream>
 
 Account::Account() {
     // Default constructor
-    account_id = 0;
     username = "";
     passwd_hash = "";
     account_type = AccountType::NONETYPE;
 }
 
-Account::Account(uint64_t account_id, std::string username, std::string passwd_hash, AccountType account_type) {
+Account::Account(const std::string& username, const  std::string& passwd_hash, const AccountType& account_type) {
     // Constructor with parameters
     assert(passwd_hash.length() == 64);
-    this->account_id = account_id;
     this->username = username;
     this->passwd_hash = passwd_hash;
     this->account_type = account_type;
@@ -21,7 +19,6 @@ Account::Account(uint64_t account_id, std::string username, std::string passwd_h
 
 Account::Account(const Account& acc) {
     // Copy constructor
-    account_id = acc.account_id;
     username = acc.username;
     passwd_hash = acc.passwd_hash;
     account_type = acc.account_type;
@@ -29,11 +26,6 @@ Account::Account(const Account& acc) {
 
 Account::~Account() {
     // Destructor
-}
-
-uint64_t Account::getAccountId() const {
-    // Getter for account_id
-    return account_id;
 }
 
 std::string Account::getUsername() const {
@@ -61,60 +53,54 @@ bool Account::is_user() const {
     return account_type == AccountType::USER;
 }
 
-void Account::setAccountId(uint64_t account_id) {
-    // Setter for account_id
-    this->account_id = account_id;
-}
-
-void Account::setUsername(std::string username) {
+void Account::setUsername(const std::string& username) {
     // Setter for username
     this->username = username;
 }
 
-void Account::setPasswdHash(std::string passwd_hash) {
+void Account::setPasswdHash(const std::string& passwd_hash) {
     // Setter for passwd_hash
     assert(passwd_hash.length() == 64);
     this->passwd_hash = passwd_hash;
 }
 
-void Account::setAccountType(AccountType account_type) {
+void Account::setAccountType(const AccountType& account_type) {
     // Setter for account_type
     this->account_type = account_type;
 }
 
 bool Account::operator == (const Account& acc) const {
     // Equality operator
-    return account_id == acc.account_id;
+    return username == acc.username;
 }
 
 bool Account::operator != (const Account& acc) const {
     // Inequality operator
-    return account_id != acc.account_id;
+    return username != acc.username;
 }
 
 bool Account::operator < (const Account& acc) const {
     // Less than operator
-    return account_id < acc.account_id;
+    return username < acc.username;
 }
 
 bool Account::operator > (const Account& acc) const {
     // Greater than operator
-    return account_id > acc.account_id;
+    return username > acc.username;
 }
 
 bool Account::operator <= (const Account& acc) const {
     // Less than or equal to operator
-    return account_id <= acc.account_id;
+    return username <= acc.username;
 }
 
 bool Account::operator >= (const Account& acc) const {
     // Greater than or equal to operator
-    return account_id >= acc.account_id;
+    return username >= acc.username;
 }
 
 Account& Account::operator = (const Account& acc) {
     // Assignment operator
-    account_id = acc.account_id;
     username = acc.username;
     passwd_hash = acc.passwd_hash;
     account_type = acc.account_type;
@@ -123,58 +109,27 @@ Account& Account::operator = (const Account& acc) {
 
 const Account Account::NULL_ACCOUNT = Account();
 
-AccountGenerator::AccountGenerator() {
-    // admin_id: 1xxxxx, user_id: 2xxxxx
-    next_admin_id = (uint64_t)(1e10);
-    next_user_id = (uint64_t)(2e10);
-}
-
-AccountGenerator::AccountGenerator(uint64_t next_admin_id, uint64_t next_user_id) {
-    this->next_admin_id = next_admin_id;
-    this->next_user_id = next_user_id;
-}
-
-AccountGenerator::~AccountGenerator() {
-    // Do nothing
-}
-
-Account AccountGenerator::newAccount(Account::AccountType account_type) {
-    assert(account_type != Account::AccountType::NONETYPE);
-    Account acc;
-    if (account_type == Account::AccountType::ADMIN) {
-        acc.setAccountId(next_admin_id);
-        acc.setAccountType(Account::AccountType::ADMIN);
-        next_admin_id++;
-    }
-    else if (account_type == Account::AccountType::USER) {
-        acc.setAccountId(next_user_id);
-        acc.setAccountType(Account::AccountType::USER);
-        next_user_id++;
-    }
-    return acc;
-}
-
 AccountPool::AccountPool() {
-    accountpool = std::map<uint64_t, Account>();
-    adminpool = std::map<uint64_t, Account>();
-    userpool = std::map<uint64_t, Account>();
+    accountpool = std::map<std::string, Account>();
+    adminpool = std::map<std::string, Account>();
+    userpool = std::map<std::string, Account>();
     sz = 0;
 }
 
 AccountPool::AccountPool(Account* begin, Account* end) {
-    accountpool = std::map<uint64_t, Account>();
-    adminpool = std::map<uint64_t, Account>();
-    userpool = std::map<uint64_t, Account>();
+    accountpool = std::map<std::string, Account>();
+    adminpool = std::map<std::string, Account>();
+    userpool = std::map<std::string, Account>();
     sz = 0;
     for (Account* it = begin; it != end; it++) {
         if (addAccount(*it) != 0) throw "Error: AccountPool::AccountPool(Account* begin, Account* end)";
     }
 }
 
-AccountPool::AccountPool(std::vector<Account> accounts) {
-    accountpool = std::map<uint64_t, Account>();
-    adminpool = std::map<uint64_t, Account>();
-    userpool = std::map<uint64_t, Account>();
+AccountPool::AccountPool(const std::vector<Account>& accounts) {
+    accountpool = std::map<std::string, Account>();
+    adminpool = std::map<std::string, Account>();
+    userpool = std::map<std::string, Account>();
     sz = 0;
     for (Account acc : accounts) {
         if (addAccount(acc) != 0) throw "Error: AccountPool::AccountPool(std::vector<Account> accounts)";
@@ -195,66 +150,66 @@ AccountPool::~AccountPool() {
     sz = 0;
 }
 
-int AccountPool::addAccount(Account acc) {
+int AccountPool::addAccount(const Account& acc) {
     try {
-        if (accountpool.find(acc.getAccountId()) != accountpool.end()) return 1;
-        accountpool[acc.getAccountId()] = acc;
+        if (accountpool.find(acc.getUsername()) != accountpool.end()) return 0x10;
+        accountpool[acc.getUsername()] = acc;
         if (acc.getAccountType() == Account::AccountType::ADMIN) {
-            adminpool[acc.getAccountId()] = acc;
+            adminpool[acc.getUsername()] = acc;
         }
         else if (acc.getAccountType() == Account::AccountType::USER) {
-            userpool[acc.getAccountId()] = acc;
+            userpool[acc.getUsername()] = acc;
         }
         sz++;
         return 0;
     }
     catch (...) {
-        return 1;
+        return 0x1F;
     }
 }
 
-int AccountPool::removeAccount(uint64_t account_id) {
+int AccountPool::removeAccount(const std::string& username) {
     try {
-        if (accountpool.find(account_id) == accountpool.end()) return 1;
-        Account acc = accountpool[account_id];
-        accountpool.erase(account_id);
+        if (accountpool.find(username) == accountpool.end()) return 0x20;
+        Account acc = accountpool[username];
+        accountpool.erase(username);
         if (acc.getAccountType() == Account::AccountType::ADMIN) {
-            adminpool.erase(account_id);
+            adminpool.erase(username);
         }
         else if (acc.getAccountType() == Account::AccountType::USER) {
-            userpool.erase(account_id);
+            userpool.erase(username);
         }
         sz--;
         return 0;
     }
     catch (...) {
-        return 1;
+        return 0x2F;
     }
 }
 
-int AccountPool::removeAccount(Account acc) {
-    return removeAccount(acc.getAccountId());
+int AccountPool::removeAccount(const Account& acc) {
+    return removeAccount(acc.getUsername());
 }
 
-int AccountPool::updateAccount(uint64_t account_id, Account acc) {
+int AccountPool::updateAccount(const Account& original_acc, const Account& new_acc) {
     try {
-        if (removeAccount(account_id) != 0) return 1;
-        if (addAccount(acc) != 0) return 1;
+        if (removeAccount(original_acc) != 0) return 0x30;
+        if (addAccount(new_acc) != 0) return 0x31;
         return 0;
     }
     catch (...) {
-        return 1;
+        return 0x3F;
     }
 }
 
-Account AccountPool::getAccount(uint64_t account_id) const {
-    if (accountpool.find(account_id) == accountpool.end()) return Account::NULL_ACCOUNT;
-    return accountpool.at(account_id);
+Account AccountPool::getAccount(const std::string& username) const {
+    if (accountpool.find(username) == accountpool.end()) return Account::NULL_ACCOUNT;
+    return accountpool.at(username);
 }
 
-AccountPool::AccountVerifyResult AccountPool::verifyAccount(uint64_t account_id, std::string passwd_hash) const {
-    if (accountpool.find(account_id) == accountpool.end()) return AccountVerifyResult::ACCOUNT_NOT_FOUND;
-    if (accountpool.at(account_id).getPasswdHash() != passwd_hash) return AccountVerifyResult::WRONG_PASSWORD;
+AccountPool::AccountVerifyResult AccountPool::verifyAccount(const std::string& username, const std::string& passwd_hash) const {
+    if (accountpool.find(username) == accountpool.end()) return AccountVerifyResult::ACCOUNT_NOT_FOUND;
+    if (accountpool.at(username).getPasswdHash() != passwd_hash) return AccountVerifyResult::WRONG_PASSWORD;
     return AccountVerifyResult::SUCCESS;
 }
 
@@ -275,95 +230,73 @@ int AccountPool::clear() {
         return 0;
     }
     catch (...) {
-        return 1;
+        return 0x4F;
     }
 }
 
-int AccountPool::load(std::string filename) {
-    if (filename == "") return 1;
-    std::fstream file;
-    file.open(filename, std::ios::in | std::ios::binary);
-    if (!file.is_open()) return 1;
+int AccountPool::load(std::istream& is) {
+    if (!is) return 0x50;
     try {
-        if (clear()) {
-            file.close();
-            return 1;
-        }
+        if (clear() != 0) return 0x51;
         // Read size
         size_t sz_tmp = 0;
-        file.read((char*)&sz_tmp, sizeof(size_t));
+        is.read((char*)&sz_tmp, sizeof(size_t));
         for (size_t i = 0; i < sz_tmp; i++) {
             // Read one Account
-            uint64_t account_id;
             std::string username, passwd_hash;
             char acc_type;
-            // Read account_id
-            file.read((char*)&account_id, sizeof(uint64_t));
             // Read username
             size_t username_len = 0;
-            file.read((char*)&username_len, sizeof(size_t));
+            is.read((char*)&username_len, sizeof(size_t));
             char* username_buf = new char[username_len + 1];
-            file.read(username_buf, username_len * sizeof(char));
+            is.read(username_buf, username_len * sizeof(char));
             username_buf[username_len] = '\0';
             username = std::string(username_buf);
             delete[] username_buf;
             // Read passwd_hash
             size_t passwd_hash_len = 0;
-            file.read((char*)&passwd_hash_len, sizeof(size_t));
+            is.read((char*)&passwd_hash_len, sizeof(size_t));
             char* passwd_hash_buf = new char[passwd_hash_len + 1];
-            file.read(passwd_hash_buf, passwd_hash_len * sizeof(char));
+            is.read(passwd_hash_buf, passwd_hash_len * sizeof(char));
             passwd_hash_buf[passwd_hash_len] = '\0';
             passwd_hash = std::string(passwd_hash_buf);
             delete[] passwd_hash_buf;
             // Read account_type
-            file.read(&acc_type, sizeof(char));
-            Account acc(account_id, username, passwd_hash, (Account::AccountType)acc_type);
-            if (addAccount(acc)) {
-                file.close();
-                return 1;
-            }
+            is.read(&acc_type, sizeof(char));
+            Account acc(username, passwd_hash, (Account::AccountType)acc_type);
+            if (addAccount(acc)) return 0x53;
         }
-        file.close();
         return 0;
     }
     catch (...) {
-        file.close();
-        return 1;
+        return 0x5F;
     }
 }
 
-int AccountPool::save(std::string filename) const {
-    if (filename == "") return 1;
-    std::fstream file;
-    file.open(filename, std::ios::out | std::ios::binary);
-    if (!file.is_open()) return 1;
+int AccountPool::save(std::ostream& os) const {
+    if (!os) return 0x60;
     try {
         // Write size
-        file.write((char*)&sz, sizeof(size_t));
+        os.write((char*)&sz, sizeof(size_t));
         for (auto it = accountpool.begin(); it != accountpool.end(); it++) {
             // Save one Account
             Account acc = it->second;
-            // Write account_id
-            uint64_t account_id = acc.getAccountId();
-            file.write((char*)&account_id, sizeof(uint64_t));
             // Write username
             size_t username_len = acc.getUsername().length();
-            file.write((char*)&username_len, sizeof(size_t));
-            file.write(acc.getUsername().c_str(), username_len * sizeof(char));
+            os.write((char*)&username_len, sizeof(size_t));
+            os.write(acc.getUsername().c_str(), username_len * sizeof(char));
             // Write passwd_hash
             size_t passwd_hash_len = acc.getPasswdHash().length();
-            file.write((char*)&passwd_hash_len, sizeof(size_t));
-            file.write(acc.getPasswdHash().c_str(), acc.getPasswdHash().length() * sizeof(char));
+            os.write((char*)&passwd_hash_len, sizeof(size_t));
+            os.write(acc.getPasswdHash().c_str(), acc.getPasswdHash().length() * sizeof(char));
             // Write account_type
             char acc_type = (char)acc.getAccountType();
-            file.write(&acc_type, sizeof(char));
+            os.write(&acc_type, sizeof(char));
         }
-        file.close();
         return 0;
     }
     catch (...) {
-        file.close();
-        return 1;
+        return 0x6F;
     }
 }
 

@@ -1,43 +1,22 @@
-#include "CarPool.hpp"
-#include "Hash.hpp"
-#include "AccountPool.hpp"
+#include "carinfo-manager/carpool.hpp"
+#include "carinfo-manager/hash.hpp"
+#include <fstream>
+#include "carinfo-manager/accountpool.hpp"
 #include "cpp-httplib/httplib.h"
 #include <iostream>
 
 using namespace std;
 
+
 int main() {
-    AccountPool accountpool;
-    Hash hash1("name1", "salt1"), hash2("name2", "salt2"), hash3("name3", "salt3");
-    Account acc1(1, "name1", hash1.getHash(), Account::AccountType::ADMIN);
-    Account acc2(2, "name2", hash2.getHash(), Account::AccountType::USER);
-    Account acc3(3, "name3", hash3.getHash(), Account::AccountType::USER);
-    accountpool.addAccount(acc1);
-    accountpool.addAccount(acc2);
-    accountpool.addAccount(acc3);
-    cout << accountpool.size() << endl;
-    vector<Account> accs1 = accountpool.list();
-    for (auto acc : accs1) {
-        cout << acc.getAccountId() << " " << acc.getUsername() << " " << acc.getPasswdHash() << " " << (int)acc.getAccountType() << endl;
-    }
-    cout << "save: " << accountpool.save("accountpool.dat") << endl;
-
-    AccountPool accountpool2;
-    cout << "load: " << accountpool2.load("accountpool.dat") << endl;
-    cout << accountpool2.size() << endl;
-    auto accs2 = accountpool2.list();
-    for (auto acc : accs2) {
-        cout << acc.getAccountId() << " " << acc.getUsername() << " " << acc.getPasswdHash() << " " << (int)acc.getAccountType() << endl;
-    }
-
-
     httplib::Server svr;
 
-    svr.Get("/hi", [](const httplib::Request &, httplib::Response &res) {
-      res.set_content("Hello World!", "text/plain");
+    svr.Get("/test", [&](const httplib::Request &req, httplib::Response &res) {
+        res.set_content("asdfghj\0 123456", "application/octet-stream");
+        res.status = 200;
     });
 
-    svr.listen("0.0.0.0", 8080);
+    svr.listen("localhost", 8080);
 
     return 0;
 }
