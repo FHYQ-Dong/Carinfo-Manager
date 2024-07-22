@@ -1,6 +1,14 @@
+/**
+ * @file test/test_CarPool.cc
+ * @brief Test for CarPool class in carinfo-manager project, including constructors, addCar, removeCar, updateCar, getCarbyId, getCarbyColor, getCarbyType, save, load, operator==, operator!=, operator=, using Google Test framework.
+ * @author donghy23@mails.tsinghua.edu.cn
+ * @version 1.0
+ */
+
 #include "gtest/gtest.h"
 #include "carinfo-manager/carpool.hpp"
 #include <fstream>
+#include <vector>
 
 TEST(Test_CarPool, test_CarPool_default_constructor) {
     CarPool carpool;
@@ -84,6 +92,7 @@ TEST(Test_CarPool, test_CarPool_updateCar) {
     EXPECT_EQ(carpool.addCar(car3), 0);
     EXPECT_EQ(carpool.size(), 3);
     EXPECT_FALSE(carpool.empty());
+
     Car car4("京D13579", "SUV", Color(255, 0, 0), 2021, "img4.jpg");
     Car car5("京E24680", "Sedan", Color(0, 255, 0), 2020, "img5.jpg");
     Car car6("京F35791", "Hatchback", Color(0, 0, 255), 2019, "img6.jpg");
@@ -95,6 +104,15 @@ TEST(Test_CarPool, test_CarPool_updateCar) {
     EXPECT_EQ(carpool.updateCar(car1, car4), 0x90);
     EXPECT_EQ(carpool.updateCar(car2, car5), 0x90);
     EXPECT_EQ(carpool.updateCar(car3, car6), 0x90);
+
+    EXPECT_EQ(carpool.updateCar("京D13579", car1), 0);
+    EXPECT_EQ(carpool.updateCar("京E24680", car2), 0);
+    EXPECT_EQ(carpool.updateCar("京F35791", car3), 0);
+    EXPECT_EQ(carpool.size(), 3);
+    EXPECT_FALSE(carpool.empty());
+    EXPECT_EQ(carpool.updateCar("京D13579", car1), 0x90);
+    EXPECT_EQ(carpool.updateCar("京E24680", car2), 0x90);
+    EXPECT_EQ(carpool.updateCar("京F35791", car3), 0x90);
 }
 
 TEST(Test_CarPool, test_CarPool_getCarbyId) {

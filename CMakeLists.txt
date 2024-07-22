@@ -20,6 +20,8 @@ set(CMAKE_EXE_LINKER_FLAGS "-static")
 # third party
 add_subdirectory(site-packages/cpp-httplib-0.16.0)
 include_directories(site-packages/cpp-httplib-0.16.0/include)
+add_subdirectory(site-packages/nlohmann-json-3.11.3)
+include_directories(site-packages/nlohmann-json-3.11.3/include)
 
 # Add your source files here
 AUX_SOURCE_DIRECTORY(src SOURCES)
@@ -30,10 +32,10 @@ include_directories(include)
 
 # Add executable target
 add_executable(Carinfo-Manager-Server src/server.cpp ${SOURCES})
-target_link_libraries(Carinfo-Manager-Server libhttp)
+target_link_libraries(Carinfo-Manager-Server libhttp libjson)
 
 add_executable(Carinfo-Manager-Client src/client.cpp ${SOURCES})
-target_link_libraries(Carinfo-Manager-Client libhttp)
+target_link_libraries(Carinfo-Manager-Client libhttp libjson)
 
 # Link Libraries
 # TARGET_LINK_LIBRARIES(${PROJECT_NAME} ws2_32.lib)

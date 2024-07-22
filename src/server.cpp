@@ -1,3 +1,10 @@
+/**
+ * @file src/server.cpp
+ * @brief Implementation of a server for the carinfo-manager project using httplib library
+ * @author donghy23@mails.tsinghua.edu.cn
+ * @version 1.0
+ */
+
 #include "carinfo-manager/carpool.hpp"
 #include "carinfo-manager/hash.hpp"
 #include <fstream>

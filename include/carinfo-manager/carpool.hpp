@@ -1,3 +1,17 @@
+/**
+ * @file carpool.hpp
+ * @brief Declaration of class Color, class Car, and class CarPool.
+ * 
+ * @details
+ * This file contains the declarations of the Color, Car, and CarPool classes.
+ * The Color class represents a color with red, green, and blue components.
+ * The Car class represents a car with an ID, type, color, year, and image path.
+ * The CarPool class represents a collection of cars and provides various operations on them.
+ * 
+ * @author donghy23@mails.tsinghua.edu.cn
+ * @version 1.0
+ */
+
 #pragma once
 #pragma execution_character_set("utf-8")
 #include "carinfo-manager/basicpool.hpp"
@@ -7,67 +21,31 @@
 #include <cstdint>
 #include <vector>
 
-class Color {
-    public:
-        short red, green, blue;
-        Color();
-        Color(char r, char g, char b);
-        Color(const std::string& color_string); // format: "(R, G, B)"
-        Color(const Color& c);
-        ~Color();
-        operator std::string() const;
-        bool operator == (const Color& c) const;
-        bool operator != (const Color& c) const;
-        bool operator < (const Color& c) const;
-        bool operator > (const Color& c) const;
-        bool operator <= (const Color& c) const;
-        bool operator >= (const Color& c) const;
-        Color& operator = (const Color& c);
-
-        const static Color Red;
-        const static Color Green;
-        const static Color Blue;
-        const static Color Yellow;
-        const static Color Cyan;
-        const static Color Magenta;
-        const static Color White;
-        const static Color Black;
-        const static Color Gray;
-        const static Color LightGray;
-        const static Color DarkGray;
-        const static Color Brown;
-        const static Color Orange;
-        const static Color Pink;
-        const static Color Purple;
-        const static Color LightBlue;
-        const static Color LightGreen;
-        const static Color LightYellow;
-        const static Color LightCyan;
-        const static Color LightMagenta;
-        const static Color NULL_COLOR;
-};
-
 class Car {
     private:
         std::string car_id;
         std::string car_type;
-        Color car_color;
+        std::string car_owner;
+        std::string car_color;
         int car_year;
         std::string car_img_path;
 
     public:
         Car();
-        Car(const std::string& id, const std::string& type, const Color& c, const int year, const std::string& img_path);
+        Car(const std::string& id, const std::string& type, const std::string& owner, \
+            const std::string& color, const int year, const std::string& img_path);
         Car(const Car& c);
         ~Car();
         void setId(const std::string& id);
         void setType(const std::string& type);
-        void setColor(const Color& c);
+        void setOwner(const std::string& owner);
+        void setColor(const std::string& color);
         void setYear(const int year);
         void setImagePath(const std::string& img_path);
         std::string getId() const;
         std::string getType() const;
-        Color getColor() const;
+        std::string getOwner() const;
+        std::string getColor() const;
         int getYear() const;
         std::string getImagePath() const;
 
@@ -84,8 +62,27 @@ class Car {
 class CarPool : public BasicPool {
     private:
         std::map<std::string, Car> carpool_byid;
-        std::multimap<Color, Car> carpool_bycolor;
+        std::multimap<std::string, Car> carpool_byowner;
+        std::multimap<std::string, Car> carpool_bycolor;
         std::multimap<std::string, Car> carpool_bytype;
+
+    private:
+        class __Iterator {
+            private:
+                std::map<std::string, Car>::iterator iter;
+            public:
+                __Iterator(std::map<std::string, Car>::iterator it = std::map<std::string, Car>::iterator());
+                __Iterator(const __Iterator& it);
+                ~__Iterator();
+                Car& operator * ();
+                Car* operator -> ();
+                __Iterator& operator ++ ();
+                __Iterator operator ++ (int);
+                __Iterator& operator -- ();
+                __Iterator operator -- (int);
+                bool operator == (const __Iterator& it) const;
+                bool operator != (const __Iterator& it) const;
+        };
 
     public:
         CarPool();
@@ -97,18 +94,25 @@ class CarPool : public BasicPool {
         int removeCar(const Car& car);
         int removeCar(const std::string& id);
         int updateCar(const Car& original_car, const Car& new_car);
+        int updateCar(const std::string& id, const Car& new_car);
         CarPool getCarbyId(const std::string& id) const;
-        CarPool getCarbyColor(const Color& color) const;
+        CarPool getCarbyColor(const std::string& color) const;
+        CarPool getCarbyOwner(const std::string& owner) const;
         CarPool getCarbyType(const std::string& type) const;
-        CarPool getCar(const std::string& id = "", const Color& color = Color::NULL_COLOR, const std::string& type = "") const;
+        CarPool getCar(const std::string& id = "", const std::string& color = "", const std::string& owner, const std::string& type = "") const;
         size_t size() const;
         bool empty() const ;
         int clear();
         int load(std::istream& is);
         int save(std::ostream& os) const;
+        size_t ostreamSize() const;
         std::vector<Car> list() const;
 
-        operator std::vector<Car>() const;
+        using iterator = __Iterator;
+        iterator begin();
+        iterator end();
+
+        // operator std::vector<Car>() const;
         bool operator == (const CarPool& cp) const;
         bool operator != (const CarPool& cp) const;
         CarPool& operator = (const CarPool& cp);

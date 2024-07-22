@@ -1,3 +1,14 @@
+/**
+ * @file src/hash.cpp
+ * @brief Implementation of class Hash for hashing data with SHA-256 algorithm
+ * 
+ * @details 
+ * This file contains the implementation of the Hash class, which provides functionality for hashing data using the SHA-256 algorithm. It includes methods for performing various operations required for the SHA-256 algorithm, such as message scheduling, choice, majority, and rounds. The class also provides methods for setting the data and salt values, computing the hash, and retrieving the computed hash value.
+ * 
+ * @author donghy23@mails.tsinghua.edu.cn & kibonga@github.com
+ * @version 1.0
+ */
+
 #include "carinfo-manager/hash.hpp"
 #include <vector>
 #include <sstream>
@@ -87,6 +98,10 @@ void Hash::compress_block(uint32_t(&H)[8], uint8_t(&block)[64]) {
 	for (int i = 0; i < 8; i++) H[i] += h[i];
 }
 
+/**
+ * Calculates the SHA-256 hash of the data combined with the salt.
+ * The resulting hash is stored in the `hash` member variable.
+ */
 void Hash::sha256() {
     uint32_t H[8] = { 0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19 };
     std::string m = data + salt;
@@ -127,33 +142,49 @@ void Hash::sha256() {
 	hash = ss.str();
 }
 
-Hash::Hash() : data(""), salt(""), hash("") {
-    // Default constructor
-}
+Hash::Hash() : data(""), salt(""), hash("") {}
 
 Hash::Hash(std::string data, std::string salt) : data(data), salt(salt), hash("") {
-    // Parameterized constructor
     sha256();
 }
 
-Hash::Hash(const Hash& hashObj) : data(hashObj.data), salt(hashObj.salt), hash(hashObj.hash) {
-    // Copy constructor
-}
+Hash::Hash(const Hash& hashObj) : data(hashObj.data), salt(hashObj.salt), hash(hashObj.hash) {}
 
-Hash::~Hash() {
-    // Destructor
-}
+Hash::~Hash() {}
 
+/**
+ * @brief Sets the data for the Hash object.
+ * 
+ * This function sets the data for the Hash object. The data parameter is used to update the data member of the object.
+ * After setting the data, the function calls the sha256() function to compute the SHA-256 hash of the data.
+ * 
+ * @param data The data to be set for the Hash object.
+ */
 void Hash::setData(std::string data) {
     this->data = data;
     sha256();
 }
 
+/**
+ * @brief Sets the salt value for the Hash object.
+ * 
+ * This function sets the salt value for the Hash object. The salt value is used in the hashing process
+ * to add an extra layer of security to the hashed data.
+ * 
+ * @param salt The salt value to be set.
+ */
 void Hash::setSalt(std::string salt) {
     this->salt = salt;
     sha256();
 }
 
+/**
+ * @brief Retrieves the hash value.
+ * 
+ * This function returns the hash value stored in the `Hash` object.
+ * 
+ * @return The hash value.
+ */
 std::string Hash::getHash() {
     return hash;
 }

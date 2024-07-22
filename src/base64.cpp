@@ -1,3 +1,14 @@
+/**
+ * @file src/base64.cpp
+ * @brief Implementation of the Base64 class.
+ * 
+ * @details
+ * This file contains the implementation of the Base64 class, which provides functions for encoding and decoding data in Base64 format.
+ * 
+ * @author donghy23@mails.tsinghua.edu.cn
+ * @version 1.0
+ */
+
 #include "carinfo-manager/base64.hpp"
 #include <cstring>
 
@@ -17,6 +28,13 @@ const char Base64::decodeTable[] = {
 	39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, // 'a'-'z'
 };
 
+/**
+ * Encodes the given data into Base64 format.
+ * 
+ * @param data The data to be encoded.
+ * @param data_bytes_length The length of the data in bytes.
+ * @return The Base64 encoded string.
+ */
 std::string Base64::encode(const unsigned char* data, size_t data_bytes_length) {
 	std::string strEncode;
 	unsigned char Tmp[4] = { 0 };
@@ -52,6 +70,14 @@ std::string Base64::encode(const unsigned char* data, size_t data_bytes_length) 
 	return strEncode;
 }
 
+/**
+ * Decodes a Base64 encoded string.
+ *
+ * @param data The Base64 encoded data to decode.
+ * @param data_bytes_length The length of the data in bytes.
+ * @param output_bytes_length The length of the decoded output in bytes.
+ * @return The decoded string.
+ */
 std::string Base64::decode(const char* data, int data_bytes_length, size_t& output_bytes_length) {
 	std::string strDecode;
 	int nValue;

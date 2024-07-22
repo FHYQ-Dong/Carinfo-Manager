@@ -1,3 +1,10 @@
+/**
+ * @file src/client.cpp
+ * @brief Implementation of a client for the server of carinfo-manager project
+ * @author donghy23@mails.tsinghua.edu.cn
+ * @version 1.0
+ */
+
 #include <iostream>
 #include "cpp-httplib/httplib.h"
 #include <string>

@@ -1,3 +1,10 @@
+/**
+ * @file test/test_Base64.cc
+ * @brief Test for Base64 class in carinfo-manager project, including encode and decode functions, using Google Test framework.
+ * @author donghy23@mails.tsinghua.edu.cn
+ * @version 1.0
+ */
+
 #include "gtest/gtest.h"
 #include "carinfo-manager/base64.hpp"
 #include <iostream>
@@ -16,7 +23,6 @@ TEST(Test_Base64, TEST_Base64_encode) {
 
 TEST(Test_Base64, TEST_Base64_decode) {
     char* src = "QUJDAEFCQw==";
-    int a = 0;
     size_t res_len = 0;
     std::string res = Base64::decode(src, 12, res_len);
     std::string ans = "ABC";

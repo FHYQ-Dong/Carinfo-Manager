@@ -1,3 +1,10 @@
+/**
+ * @file test/test_Hash.cc
+ * @brief Test for Hash class in carinfo-manager project, including getHash function, using Google Test framework.
+ * @author donghy23@mails.tsinghua.edu.cn
+ * @version 1.0
+ */
+
 #include "carinfo-manager/hash.hpp"
 #include "gtest/gtest.h"
 

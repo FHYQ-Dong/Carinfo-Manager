@@ -1,3 +1,16 @@
+/**
+ * @file accountpool.hpp
+ * @brief Declaration of class Account and class AccountPool
+ * 
+ * @details
+ * This file contains the declaration of the Account class and the AccountPool class.
+ * The Account class represents a user account with a username, password hash, and account type.
+ * The AccountPool class manages a collection of user accounts and provides operations to add, remove, update, and verify accounts.
+ * 
+ * @author donghy23@mails.tsinghua.edu.cn
+ * @version 1.0
+ */
+
 #pragma once
 #pragma execution_character_set("utf-8")
 #include "carinfo-manager/basicpool.hpp"
@@ -69,6 +82,7 @@ class AccountPool : public BasicPool{
         int updateAccount(const Account& original_acc, const Account& new_acc);
         Account getAccount(const std::string& username) const;
         AccountVerifyResult verifyAccount(const std::string& username, const std::string& passwd_hash) const;
+        Account::AccountType getAccountType(const std::string& username) const;
         size_t size() const;
         bool empty() const;
         int clear();

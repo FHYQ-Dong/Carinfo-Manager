@@ -1,3 +1,10 @@
+/**
+ * @file test/test_AccountPool.cc
+ * @brief Test cases for class AccountPool in carinfo-manager project, a car information management system, which is a part of the course project for data structure and algorithm analysis in Tsinghua University, spring 2021. The project is maintained by donghy23@mails.tsinghua.edu.cn
+ * @author donghy23@mails.tsinghua.edu.cn
+ * @version 1.0
+ */
+
 #include "carinfo-manager/accountpool.hpp"
 #include "carinfo-manager/Hash.hpp"
 #include "gtest/gtest.h"
