@@ -6,10 +6,10 @@ list(REMOVE_ITEM ORIGINAL_SOURCES ../src/server.cpp ../src/client.cpp)
 include_directories(../include)
 
 # Statically link the MSVC runtime when debugging
-if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-endif()
+# if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+#     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+#     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+# endif()
 
 # test
 set(GTEST_DIR ../site-packages/googletest-1.14.0)
@@ -26,5 +26,6 @@ foreach(TEST_FILE ${TEST_FILES})
     get_filename_component(FILE_NAME ${TEST_FILE} NAME_WE)
     add_executable(${FILE_NAME} ${TEST_FILE} ${ORIGINAL_SOURCES})
     target_link_libraries(${FILE_NAME} ${GTEST_LIB})
+    target_link_libraries(${FILE_NAME} libhttp libjson)
     gtest_discover_tests(${FILE_NAME})
 endforeach()

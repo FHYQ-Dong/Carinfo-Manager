@@ -8,10 +8,10 @@ set(CMAKE_CXX_STANDARD 20)
 project(Carinfo-Manager)
 
 # Statically link the MSVC runtime when debugging
-if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-endif()
+# if(CMAKE_BUILD_TYPE STREQUAL "Debug" AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+#     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+#     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+# endif()
 
 # Build standalone executable
 set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")
@@ -33,12 +33,8 @@ include_directories(include)
 # Add executable target
 add_executable(Carinfo-Manager-Server src/server.cpp ${SOURCES})
 target_link_libraries(Carinfo-Manager-Server libhttp libjson)
-
 add_executable(Carinfo-Manager-Client src/client.cpp ${SOURCES})
 target_link_libraries(Carinfo-Manager-Client libhttp libjson)
-
-# Link Libraries
-# TARGET_LINK_LIBRARIES(${PROJECT_NAME} ws2_32.lib)
 
 # test
 enable_testing()

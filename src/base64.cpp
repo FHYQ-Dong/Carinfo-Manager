@@ -78,10 +78,10 @@ std::string Base64::encode(const unsigned char* data, size_t data_bytes_length) 
  * @param output_bytes_length The length of the decoded output in bytes.
  * @return The decoded string.
  */
-std::string Base64::decode(const char* data, int data_bytes_length, size_t& output_bytes_length) {
+std::string Base64::decode(const char* data, size_t data_bytes_length, size_t& output_bytes_length) {
 	std::string strDecode;
 	int nValue;
-	int i = 0;
+	size_t i = 0;
 	while (i < data_bytes_length) {
 		if (*data != '\r' && *data != '\n') {
 			nValue = decodeTable[*data++] << 18;

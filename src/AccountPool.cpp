@@ -107,6 +107,11 @@ Account& Account::operator = (const Account& acc) {
 
 const Account Account::NULL_ACCOUNT = Account();
 
+/**
+ * @brief Default constructor for the AccountPool class.
+ * 
+ * This constructor initializes the account pool with an empty map of accounts and sets the size of the account pool to 0.
+ */
 AccountPool::AccountPool() {
     accountpool = std::map<std::string, Account>();
     adminpool = std::map<std::string, Account>();
@@ -114,6 +119,14 @@ AccountPool::AccountPool() {
     sz = 0;
 }
 
+/**
+ * @brief Constructor for the AccountPool class that initializes the account pool with a range of accounts.
+ * 
+ * This constructor initializes the account pool with the accounts in the range [begin, end). It adds each account in the range to the account pool.
+ * 
+ * @param begin An iterator pointing to the beginning of the range of accounts.
+ * @param end An iterator pointing to the end of the range of accounts.
+ */
 AccountPool::AccountPool(Account* begin, Account* end) {
     accountpool = std::map<std::string, Account>();
     adminpool = std::map<std::string, Account>();
@@ -124,6 +137,13 @@ AccountPool::AccountPool(Account* begin, Account* end) {
     }
 }
 
+/**
+ * @brief Constructor for the AccountPool class that initializes the account pool with a vector of accounts.
+ * 
+ * This constructor initializes the account pool with the accounts in the specified vector. It adds each account in the vector to the account pool.
+ * 
+ * @param accounts The vector of accounts to initialize the account pool with.
+ */
 AccountPool::AccountPool(const std::vector<Account>& accounts) {
     accountpool = std::map<std::string, Account>();
     adminpool = std::map<std::string, Account>();
@@ -134,6 +154,13 @@ AccountPool::AccountPool(const std::vector<Account>& accounts) {
     }
 }
 
+/**
+ * @brief Copy constructor for the AccountPool class.
+ * 
+ * This constructor initializes the account pool with the accounts in the specified AccountPool object.
+ * 
+ * @param ap The AccountPool object to copy.
+ */
 AccountPool::AccountPool(const AccountPool& ap) {
     accountpool = ap.accountpool;
     adminpool = ap.adminpool;
@@ -141,6 +168,11 @@ AccountPool::AccountPool(const AccountPool& ap) {
     sz = ap.sz;
 }
 
+/**
+ * @brief Destructor for the AccountPool class.
+ * 
+ * This destructor clears the account pool and frees the memory used by the account pool.
+ */
 AccountPool::~AccountPool() {
     accountpool.clear();
     adminpool.clear();
@@ -185,8 +217,8 @@ int AccountPool::addAccount(const Account& acc) {
  * 
  * @param username The username of the account to be removed.
  * @return Returns 0 if the account is successfully removed, else an error code:
- *             - 0x20: The account does not exist in the pool.
- *             - 0x2F: An unknown error occurred.
+ *         - 0x20: The account does not exist in the pool.
+ *         - 0x2F: An unknown error occurred.
  */
 int AccountPool::removeAccount(const std::string& username) {
     try {
@@ -207,6 +239,18 @@ int AccountPool::removeAccount(const std::string& username) {
     }
 }
 
+/**
+ * @brief Removes an account from the account pool.
+ * 
+ * This function removes the account with the specified username from the account pool.
+ * If the account is successfully removed, it returns 0. If the account does not exist in the account pool, it returns 0x30.
+ * If an exception occurs during the removal process, it returns 0x3F.
+ * 
+ * @param acc The account to be removed.
+ * @return Returns 0 if the account is successfully removed, else an error code:
+ *         - 0x30: The account does not exist in the pool.
+ *         - 0x3F: An unknown error occurred.
+ */
 int AccountPool::removeAccount(const Account& acc) {
     return removeAccount(acc.getUsername());
 }
@@ -273,14 +317,32 @@ Account::AccountType AccountPool::getAccountType(const std::string& username) co
     return accountpool.at(username).getAccountType();
 }
 
+/**
+ * Retrieves the size of the account pool.
+ *
+ * @return The size of the account pool.
+ */
 size_t AccountPool::size() const {
     return sz;
 }
 
+/**
+ * Checks if the account pool is empty.
+ *
+ * @return True if the account pool is empty, false otherwise.
+ */
 bool AccountPool::empty() const {
     return sz == 0;
 }
 
+/**
+ * @brief Clears the account pool.
+ * 
+ * This function clears the account pool by removing all accounts from the account pool and setting the size of the account pool to 0.
+ * 
+ * @return Returns 0 if the account pool is successfully cleared, else an error code:
+ *         - 0x4F: An unknown error occurred.
+ */
 int AccountPool::clear() {
     try {
         accountpool.clear();
@@ -303,42 +365,27 @@ int AccountPool::clear() {
  * @return Returns 0 if the accounts are loaded successfully, else an error code:
  *         - 0x50: The input stream is invalid.
  *         - 0x51: An error occurred while clearing the account pool.
- *         - 0x52: An error occurred while adding an account to the pool.
+ *         - 0x52: The loaded data is not in the correct format.
+ *         - 0x53: The loaded data is missing required fields.
+ *         - 0x54: The loaded data has incorrect field types.
+ *         - 0x55: An error occurred while adding an account to the account pool.
  *         - 0x5F: An unknown error occurred.
  */
 int AccountPool::load(std::istream& is) {
     if (!is) return 0x50;
     try {
         if (clear() != 0) return 0x51;
-        // Read size
-        size_t sz_tmp = 0;
         json load_json_obj = json::parse(is);
-        
-        is.read((char*)&sz_tmp, sizeof(size_t));
-        for (size_t i = 0; i < sz_tmp; i++) {
-            // Read one Account
-            std::string username, passwd_hash;
-            char acc_type;
-            // Read username
-            size_t username_len = 0;
-            is.read((char*)&username_len, sizeof(size_t));
-            char* username_buf = new char[username_len + 1];
-            is.read(username_buf, username_len * sizeof(char));
-            username_buf[username_len] = '\0';
-            username = std::string(username_buf);
-            delete[] username_buf;
-            // Read passwd_hash
-            size_t passwd_hash_len = 0;
-            is.read((char*)&passwd_hash_len, sizeof(size_t));
-            char* passwd_hash_buf = new char[passwd_hash_len + 1];
-            is.read(passwd_hash_buf, passwd_hash_len * sizeof(char));
-            passwd_hash_buf[passwd_hash_len] = '\0';
-            passwd_hash = std::string(passwd_hash_buf);
-            delete[] passwd_hash_buf;
-            // Read account_type
-            is.read(&acc_type, sizeof(char));
-            Account acc(username, passwd_hash, (Account::AccountType)acc_type);
-            if (addAccount(acc)) return 0x52;
+        for (json::iterator it = load_json_obj.begin(); it != load_json_obj.end(); it++) {
+            if (!it.value().is_object()) return 0x52;
+            if (!it.value().contains("username") || !it.value().contains("passwd_hash") || !it.value().contains("account_type")) return 0x53;
+            if (!it.value()["username"].is_string() || !it.value()["passwd_hash"].is_string() || !it.value()["account_type"].is_number_integer()) return 0x54;
+            Account acc(
+                std::string(it.key()), 
+                std::string(it.value()["passwd_hash"]), 
+                (Account::AccountType)(int)(it.value()["account_type"])
+        );
+            if (addAccount(acc) != 0) return 0x55;
         }
         return 0;
     }
@@ -359,22 +406,15 @@ int AccountPool::save(std::ostream& os) const {
     if (!os) return 0x60;
     try {
         // Write size
-        os.write((char*)&sz, sizeof(size_t));
+        json save_json_obj;
         for (auto it = accountpool.begin(); it != accountpool.end(); it++) {
-            // Save one Account
-            Account acc = it->second;
-            // Write username
-            size_t username_len = acc.getUsername().length();
-            os.write((char*)&username_len, sizeof(size_t));
-            os.write(acc.getUsername().c_str(), username_len * sizeof(char));
-            // Write passwd_hash
-            size_t passwd_hash_len = acc.getPasswdHash().length();
-            os.write((char*)&passwd_hash_len, sizeof(size_t));
-            os.write(acc.getPasswdHash().c_str(), acc.getPasswdHash().length() * sizeof(char));
-            // Write account_type
-            char acc_type = (char)acc.getAccountType();
-            os.write(&acc_type, sizeof(char));
+            json acc_json_obj;
+            acc_json_obj["username"] = it->second.getUsername();
+            acc_json_obj["passwd_hash"] = it->second.getPasswdHash();
+            acc_json_obj["account_type"] = (int)it->second.getAccountType();
+            save_json_obj[it->first] = acc_json_obj;
         }
+        os << save_json_obj.dump(4);
         return 0;
     }
     catch (...) {
@@ -395,14 +435,38 @@ std::vector<Account> AccountPool::list() const {
     return accounts;
 }
 
+/**
+ * @brief Equality operator for the AccountPool class.
+ * 
+ * This operator checks if two AccountPool objects are equal by comparing their size, account pools, admin pools, and user pools.
+ * 
+ * @param ap The AccountPool object to compare with.
+ * @return True if the AccountPool objects are equal, false otherwise.
+ */
 bool AccountPool::operator == (const AccountPool& ap) const {
     return sz == ap.sz && accountpool == ap.accountpool && adminpool == ap.adminpool && userpool == ap.userpool;
 }
 
+/**
+ * @brief Inequality operator for the AccountPool class.
+ * 
+ * This operator checks if two AccountPool objects are not equal by comparing their size, account pools, admin pools, and user pools.
+ * 
+ * @param ap The AccountPool object to compare with.
+ * @return True if the AccountPool objects are not equal, false otherwise.
+ */
 bool AccountPool::operator != (const AccountPool& ap) const {
     return sz != ap.sz || accountpool != ap.accountpool || adminpool != ap.adminpool || userpool != ap.userpool;
 }
 
+/**
+ * @brief Less than operator for the AccountPool class.
+ * 
+ * This operator compares two AccountPool objects by comparing their size.
+ * 
+ * @param ap The AccountPool object to compare with.
+ * @return True if the size of the AccountPool object is less than the size of the other AccountPool object, false otherwise.
+ */
 AccountPool& AccountPool::operator = (const AccountPool& ap) {
     sz = ap.sz;
     accountpool = ap.accountpool;

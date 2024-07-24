@@ -17,11 +17,13 @@
 #include "carinfo-manager/carpool.hpp"
 #include <fstream>
 #include "json/json.hpp"
+using nlohmann::json;
 
 Car::Car() {
     car_id = "";
     car_type = "";
     car_color = "";
+    car_owner = "";
     car_year = 0;
     car_img_path = "";
 }
@@ -36,7 +38,9 @@ Car::Car(const std::string& id, const std::string& type, const std::string& owne
     car_img_path = img_path;
 }
 
-Car::Car(const Car& c) : car_id(c.car_id), car_type(c.car_type), car_color(c.car_color) {}
+Car::Car(const Car& c) : \
+    car_id(c.car_id), car_type(c.car_type), car_color(c.car_color), \
+    car_owner(c.car_owner), car_year(c.car_year), car_img_path(c.car_img_path) {}
 
 Car::~Car() {}
 
@@ -115,6 +119,7 @@ bool Car::operator >= (const Car& c) const {
 Car& Car::operator = (const Car& c) {
     car_id = c.car_id;
     car_type = c.car_type;
+    car_owner = c.car_owner;
     car_color = c.car_color;
     car_year = c.car_year;
     car_img_path = c.car_img_path;
@@ -122,57 +127,6 @@ Car& Car::operator = (const Car& c) {
 }
 
 const Car Car::NULL_CAR = Car();
-
-/**
- * @brief Constructs a new iterator object for the CarPool class.
- *
- * This constructor initializes the iterator with the given map iterator.
- *
- * @param it The iterator to initialize the CarPool::__Iterator object with.
- */
-CarPool::__Iterator::__Iterator(std::map<std::string, Car>::iterator it) : iter(it) {}
-
-CarPool::__Iterator::__Iterator(const CarPool::__Iterator& it) : iter(it.iter) {}
-
-CarPool::__Iterator::~__Iterator() {}
-
-Car& CarPool::__Iterator::operator * () {
-    return iter->second;
-}
-
-Car* CarPool::__Iterator::operator -> () {
-    return &(iter->second);
-}
-
-CarPool::__Iterator& CarPool::__Iterator::operator ++ () {
-    iter++;
-    return *this;
-}
-
-CarPool::__Iterator CarPool::__Iterator::operator ++ (int) {
-    CarPool::__Iterator it = *this;
-    iter++;
-    return it;
-}
-
-CarPool::__Iterator& CarPool::__Iterator::operator -- () {
-    iter--;
-    return *this;
-}
-
-CarPool::__Iterator CarPool::__Iterator::operator -- (int) {
-    CarPool::__Iterator it = *this;
-    iter--;
-    return it;
-}
-
-bool CarPool::__Iterator::operator == (const CarPool::__Iterator& it) const {
-    return iter == it.iter;
-}
-
-bool CarPool::__Iterator::operator != (const CarPool::__Iterator& it) const {
-    return iter != it.iter;
-}
 
 /**
  * @brief Constructs a new CarPool object.
@@ -188,6 +142,14 @@ CarPool::CarPool() {
     sz = 0;
 }
 
+/**
+ * @brief Constructs a new CarPool object with cars in the range [begin, end).
+ * 
+ * This constructor initializes the CarPool object by adding cars in the range [begin, end) to the carpool.
+ * 
+ * @param begin An iterator pointing to the first car in the range.
+ * @param end An iterator pointing to the end of the range.
+ */
 CarPool::CarPool(Car* begin, Car* end) {
     carpool_byid = std::map<std::string, Car>();
     carpool_bycolor = std::multimap<std::string, Car>();
@@ -197,6 +159,13 @@ CarPool::CarPool(Car* begin, Car* end) {
     for (Car* i = begin; i != end; i++) addCar(*i);
 }
 
+/**
+ * @brief Constructs a new CarPool object with cars in the vector.
+ * 
+ * This constructor initializes the CarPool object by adding cars in the vector to the carpool.
+ * 
+ * @param cars A vector containing the cars to be added to the carpool.
+ */
 CarPool::CarPool(const std::vector<Car>& cars) {
     carpool_byid = std::map<std::string, Car>();
     carpool_bycolor = std::multimap<std::string, Car>();
@@ -206,6 +175,13 @@ CarPool::CarPool(const std::vector<Car>& cars) {
     for (Car car : cars) addCar(car);
 }
 
+/**
+ * @brief Constructs a new CarPool object by copying an existing CarPool object.
+ * 
+ * This constructor initializes the CarPool object by copying the contents of the provided CarPool object.
+ * 
+ * @param cp The CarPool object to be copied.
+ */
 CarPool::CarPool(const CarPool& cp) {
     carpool_byid = cp.carpool_byid;
     carpool_bycolor = cp.carpool_bycolor;
@@ -214,6 +190,11 @@ CarPool::CarPool(const CarPool& cp) {
     sz = cp.sz;
 }
 
+/**
+ * @brief Destroys the CarPool object.
+ * 
+ * This destructor clears the carpool data by removing all cars from the carpool containers.
+ */
 CarPool::~CarPool() {
     carpool_byid.clear();
     carpool_bycolor.clear();
@@ -335,18 +316,18 @@ int CarPool::updateCar(const Car& original_car, const Car& new_car) {
  * @param id The ID of the car to be updated.
  * @param new_car The new car object to replace the existing car.
  * @return Returns 0 if the car was successfully updated, else an error code:
- *         - 0xD0: If the removal of the original car is successful but the addition of the new car fails.
- *         - 0xD1: If the addition of the new car fails.
- *         - 0xDF: If an exception occurs during the update process.
+ *         - 0x90: If the removal of the original car is successful but the addition of the new car fails.
+ *         - 0x91: If the addition of the new car fails.
+ *         - 0x9F: If an exception occurs during the update process.
  */
 int CarPool::updateCar(const std::string& id, const Car& new_car) {
     try {
-        if (removeCar(id)) return 0xD0;
-        if (addCar(new_car)) return 0xD1;
+        if (removeCar(id)) return 0x90;
+        if (addCar(new_car)) return 0x91;
         return 0;
     }
     catch (...) {
-        return 0xDF;
+        return 0x9F;
     }
 }
 
@@ -376,6 +357,12 @@ CarPool CarPool::getCarbyColor(const std::string& color) const {
     return cars;
 }
 
+/**
+ * Retrieves a CarPool object containing all cars owned by a specific owner.
+ *
+ * @param owner The owner of the cars to retrieve.
+ * @return A CarPool object containing all cars owned by the specified owner.
+ */
 CarPool CarPool::getCarbyOwner(const std::string& owner) const {
     CarPool cars;
     auto it_bg = carpool_byowner.lower_bound(owner), it_ed = carpool_byowner.upper_bound(owner);
@@ -414,9 +401,14 @@ CarPool CarPool::getCar(const std::string& id, const std::string& color, const s
         _id = "";
         goto begin;
     }
-    else if (_color != Color::NULL_COLOR) {
+    else if (_owner != "") {
+        cars = cars.getCarbyOwner(_owner);
+        _owner = "";
+        goto begin;
+    }
+    else if (_color != "") {
         cars = cars.getCarbyColor(_color);
-        _color = Color::NULL_COLOR;
+        _color = "";
         goto begin;
     }
     else if (_type != "") {
@@ -427,10 +419,24 @@ CarPool CarPool::getCar(const std::string& id, const std::string& color, const s
     else return cars;
 }
 
+/**
+ * @brief Retrieves the number of cars in the carpool.
+ * 
+ * This function returns the number of cars in the carpool.
+ * 
+ * @return The number of cars in the carpool.
+ */
 size_t CarPool::size() const {
     return sz;
 }
 
+/**
+ * @brief Checks if the carpool is empty.
+ * 
+ * This function checks if the carpool is empty by checking if the size of the carpool is zero.
+ * 
+ * @return True if the carpool is empty, otherwise false.
+ */
 bool CarPool::empty() const {
     return sz == 0;
 }
@@ -464,51 +470,34 @@ int CarPool::clear() {
  * @return Returns 0 if the car data is successfully loaded, otherwise returns an error code:
  *         - 0xB0: If the input stream is not valid.
  *         - 0xB1: If there is an error while clearing the existing car data in the CarPool object.
- *         - 0xB3: If there is an error while adding a car to the CarPool object.
- *         - 0xBF: If an unknown exception occurs during the loading process.
+ *         - 0xB2: If the JSON object is not an object.
+ *         - 0xB3: If the JSON object does not contain the required fields.
+ *         - 0xB4: If the JSON object contains fields with incorrect types.
+ *         - 0xB5: If there is an error while adding a car to the CarPool object.
+ *         - 0xBF: If an unknown exception occurs while loading the car data.
  */
 int CarPool::load(std::istream& is) {
     if (!is) return 0xB0;
     try {
-        if(clear()) return 0xB1;
-        // Read size
-        size_t sz_tmp = 0;
-        is.read((char*)&sz_tmp, sizeof(size_t));
-        for (size_t i = 0; i < sz_tmp; i++) {
-            // Load one Car
-            std::string id, type, img_path;
-            Color color;
-            int year;
-            // read car_id
-            size_t id_len = 0;
-            is.read((char*)&id_len, sizeof(size_t));
-            char* id_buf = new char[id_len + 1];
-            is.read(id_buf, id_len * sizeof(char));
-            id_buf[id_len] = '\0';
-            id = id_buf;
-            delete[] id_buf;
-            // read car_type
-            size_t type_len = 0;
-            is.read((char*)&type_len, sizeof(size_t));
-            char* type_buf = new char[type_len + 1];
-            is.read(type_buf, type_len * sizeof(char));
-            type_buf[type_len] = '\0';
-            type = type_buf;
-            delete[] type_buf;
-            // read car_color
-            is.read((char*)&color, sizeof(Color));
-            // read car_year
-            is.read((char*)&year, sizeof(int));
-            // read car_img_path
-            size_t img_path_len = 0;
-            is.read((char*)&img_path_len, sizeof(size_t));
-            char* img_path_buf = new char[img_path_len + 1];
-            is.read(img_path_buf, img_path_len * sizeof(char));
-            img_path_buf[img_path_len] = '\0';
-            img_path = img_path_buf;
-            delete[] img_path_buf;
-            Car car(id, type, color, year, img_path);
-            if (addCar(car)) return 0xB3;
+        if(clear() != 0) return 0xB1;
+        json load_json_obj = json::parse(is);
+        for (auto it = load_json_obj.begin(); it != load_json_obj.end(); it++) {
+            if (!it.value().is_object()) return 0xB2;
+            if (!it.value().contains("id") || !it.value().contains("type") || !it.value().contains("owner") || \
+                !it.value().contains("color") || !it.value().contains("year") || !it.value().contains("img_path")) 
+                return 0xB3;
+            if (!it.value()["id"].is_string() || !it.value()["type"].is_string() || !it.value()["owner"].is_string() || \
+                !it.value()["color"].is_string() || !it.value()["year"].is_number_integer() || !it.value()["img_path"].is_string())
+                return 0xB4;
+            Car car(
+                std::string(it.value()["id"]), 
+                std::string(it.value()["type"]), 
+                std::string(it.value()["owner"]), 
+                std::string(it.value()["color"]), 
+                int(it.value()["year"]), 
+                std::string(it.value()["img_path"])
+            );
+            if (addCar(car)) return 0xB5;
         }
         return 0;
     }
@@ -528,53 +517,23 @@ int CarPool::load(std::istream& is) {
 int CarPool::save(std::ostream& os) const {
     if (!os) return 0xC0;
     try {
-        // Write size
-        os.write((char*)&sz, sizeof(size_t));
+        json save_json_obj;
         for (auto it = carpool_byid.begin(); it != carpool_byid.end(); it++) {
-            // Save one Car
-            Car car = it->second;
-            // write car_id
-            size_t id_len = car.getId().length();
-            os.write((char*)&id_len, sizeof(size_t));
-            os.write(car.getId().c_str(), id_len * sizeof(char));
-            // write car_type
-            size_t type_len = car.getType().length();
-            os.write((char*)&type_len, sizeof(size_t));
-            os.write(car.getType().c_str(), type_len * sizeof(char));
-            // write car_color
-            Color color = car.getColor();
-            os.write((char*)&color, sizeof(Color));
-            // write car_year
-            int year = car.getYear();
-            os.write((char*)&year, sizeof(int));
-            // write car_img_path
-            size_t img_path_len = car.getImagePath().length();
-            os.write((char*)&img_path_len, sizeof(size_t));
-            os.write(car.getImagePath().c_str(), img_path_len * sizeof(char));
+            json car_json_obj;
+            car_json_obj["id"] = it->second.getId();
+            car_json_obj["type"] = it->second.getType();
+            car_json_obj["owner"] = it->second.getOwner();
+            car_json_obj["color"] = it->second.getColor();
+            car_json_obj["year"] = it->second.getYear();
+            car_json_obj["img_path"] = it->second.getImagePath();
+            save_json_obj[it->first] = car_json_obj;
         }
+        os << save_json_obj.dump(4);
         return 0;
     }
     catch (...) {
         return 0xCF;
     }
-}
-
-/**
- * Calculates the size of the ostream buffer for the CarPool object.
- *
- * @return The size of the ostream buffer required to save the CarPool object.
- */
-size_t CarPool::ostreamSize() const {
-    size_t sz = sizeof(size_t);
-    for (auto it = carpool_byid.begin(); it != carpool_byid.end(); it++) {
-        Car car = it->second;
-        sz += sizeof(size_t) + car.getId().length() * sizeof(char);
-        sz += sizeof(size_t) + car.getType().length() * sizeof(char);
-        sz += sizeof(Color);
-        sz += sizeof(int);
-        sz += sizeof(size_t) + car.getImagePath().length() * sizeof(char);
-    }
-    return sz;
 }
 
 /**
@@ -591,31 +550,37 @@ std::vector<Car> CarPool::list() const {
 }
 
 /**
- * Returns an iterator pointing to the beginning of the CarPool container.
- *
- * @return An iterator pointing to the beginning of the CarPool container.
+ * @brief Compares two CarPool objects for equality.
+ * 
+ * This function compares two CarPool objects for equality by comparing the size of the carpool and the cars in the carpool.
+ * 
+ * @param cp The CarPool object to compare with.
+ * @return True if the CarPool objects are equal, otherwise false.
  */
-CarPool::iterator CarPool::begin() {
-    return CarPool::iterator(carpool_byid.begin());
-}
-
-/**
- * Returns an iterator pointing to the past-the-end element of the carpool container.
- *
- * @return An iterator pointing to the past-the-end element of the carpool container.
- */
-CarPool::iterator CarPool::end() {
-    return CarPool::iterator(carpool_byid.end());
-}
-
 bool CarPool::operator == (const CarPool& cp) const {
     return sz == cp.sz && cp.carpool_byid == cp.carpool_byid && carpool_bycolor == cp.carpool_bycolor && carpool_bytype == cp.carpool_bytype;
 }
 
+/**
+ * @brief Compares two CarPool objects for inequality.
+ * 
+ * This function compares two CarPool objects for inequality by comparing the size of the carpool and the cars in the carpool.
+ * 
+ * @param cp The CarPool object to compare with.
+ * @return True if the CarPool objects are not equal, otherwise false.
+ */
 bool CarPool::operator != (const CarPool& cp) const {
     return sz != cp.sz || cp.carpool_byid != cp.carpool_byid || carpool_bycolor != cp.carpool_bycolor || carpool_bytype != cp.carpool_bytype;
 }
 
+/**
+ * @brief Compares two CarPool objects for less than.
+ * 
+ * This function compares two CarPool objects for less than by comparing the size of the carpool.
+ * 
+ * @param cp The CarPool object to compare with.
+ * @return True if the size of the carpool is less than the size of the carpool in the provided CarPool object, otherwise false.
+ */
 CarPool& CarPool::operator = (const CarPool& cp) {
     sz = cp.sz;
     carpool_byid = cp.carpool_byid;

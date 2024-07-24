@@ -66,24 +66,6 @@ class CarPool : public BasicPool {
         std::multimap<std::string, Car> carpool_bycolor;
         std::multimap<std::string, Car> carpool_bytype;
 
-    private:
-        class __Iterator {
-            private:
-                std::map<std::string, Car>::iterator iter;
-            public:
-                __Iterator(std::map<std::string, Car>::iterator it = std::map<std::string, Car>::iterator());
-                __Iterator(const __Iterator& it);
-                ~__Iterator();
-                Car& operator * ();
-                Car* operator -> ();
-                __Iterator& operator ++ ();
-                __Iterator operator ++ (int);
-                __Iterator& operator -- ();
-                __Iterator operator -- (int);
-                bool operator == (const __Iterator& it) const;
-                bool operator != (const __Iterator& it) const;
-        };
-
     public:
         CarPool();
         CarPool(Car* begin, Car* end);
@@ -99,18 +81,13 @@ class CarPool : public BasicPool {
         CarPool getCarbyColor(const std::string& color) const;
         CarPool getCarbyOwner(const std::string& owner) const;
         CarPool getCarbyType(const std::string& type) const;
-        CarPool getCar(const std::string& id = "", const std::string& color = "", const std::string& owner, const std::string& type = "") const;
+        CarPool getCar(const std::string& id = "", const std::string& color = "", const std::string& owner="", const std::string& type = "") const;
         size_t size() const;
         bool empty() const ;
         int clear();
         int load(std::istream& is);
         int save(std::ostream& os) const;
-        size_t ostreamSize() const;
         std::vector<Car> list() const;
-
-        using iterator = __Iterator;
-        iterator begin();
-        iterator end();
 
         // operator std::vector<Car>() const;
         bool operator == (const CarPool& cp) const;

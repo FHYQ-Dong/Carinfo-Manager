@@ -10,7 +10,7 @@
 #include <iostream>
 
 TEST(Test_Base64, TEST_Base64_encode) {
-    char* tmp = "ABCXABC";
+    const char* tmp = "ABCXABC";
     unsigned char* src = new unsigned char[8];
     for (size_t i = 0; i < 8; i++) src[i] = (unsigned char)(tmp[i]);
     src[3] = '\0'; src[7] = '\0';
@@ -22,7 +22,7 @@ TEST(Test_Base64, TEST_Base64_encode) {
 }
 
 TEST(Test_Base64, TEST_Base64_decode) {
-    char* src = "QUJDAEFCQw==";
+    const char* src = "QUJDAEFCQw==";
     size_t res_len = 0;
     std::string res = Base64::decode(src, 12, res_len);
     std::string ans = "ABC";

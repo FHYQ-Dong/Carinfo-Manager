@@ -6,7 +6,7 @@
  */
 
 #include "carinfo-manager/accountpool.hpp"
-#include "carinfo-manager/Hash.hpp"
+#include "carinfo-manager/hash.hpp"
 #include "gtest/gtest.h"
 #include <fstream>
 
