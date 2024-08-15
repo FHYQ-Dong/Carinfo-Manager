@@ -20,3 +20,6 @@ Testing/
 Carinfo-Manager-Server
 lib/
 venv/
+release/
+utils/
+log/

@@ -15,94 +15,97 @@
  */
 
 #include "carinfo-manager/accountpool.hpp"
-#include "json/json.hpp"
 #include <assert.h>
 #include <fstream>
+#include "carinfo-manager/log.hpp"
+#include "json/json.hpp"
 using json = nlohmann::json;
 
 Account::Account() {
-    username = "";
-    passwd_hash = "";
-    account_type = AccountType::NONETYPE;
+	username = "";
+	passwd_hash = "";
+	account_type = AccountType::NONETYPE;
 }
 
-Account::Account(const std::string& username, const  std::string& passwd_hash, const AccountType& account_type) {
-    assert(passwd_hash.length() == 64);
-    this->username = username;
-    this->passwd_hash = passwd_hash;
-    this->account_type = account_type;
+Account::Account(const std::string &username,
+				 const std::string &passwd_hash,
+				 const AccountType &account_type) {
+	assert(passwd_hash.length() == 64);
+	this->username = username;
+	this->passwd_hash = passwd_hash;
+	this->account_type = account_type;
 }
 
-Account::Account(const Account& acc) {
-    username = acc.username;
-    passwd_hash = acc.passwd_hash;
-    account_type = acc.account_type;
+Account::Account(const Account &acc) {
+	username = acc.username;
+	passwd_hash = acc.passwd_hash;
+	account_type = acc.account_type;
 }
 
 Account::~Account() {}
 
 std::string Account::getUsername() const {
-    return username;
+	return username;
 }
 
 std::string Account::getPasswdHash() const {
-    return passwd_hash;
+	return passwd_hash;
 }
 
 Account::AccountType Account::getAccountType() const {
-    return account_type;
+	return account_type;
 }
 
-bool Account::is_admin() const {
-    return account_type == AccountType::ADMIN;
+bool Account::isAdmin() const {
+	return account_type == AccountType::ADMIN;
 }
 
-bool Account::is_user() const {
-    return account_type == AccountType::USER;
+bool Account::isUser() const {
+	return account_type == AccountType::USER;
 }
 
-void Account::setUsername(const std::string& username) {
-    this->username = username;
+void Account::setUsername(const std::string &username) {
+	this->username = username;
 }
 
-void Account::setPasswdHash(const std::string& passwd_hash) {
-    assert(passwd_hash.length() == 64);
-    this->passwd_hash = passwd_hash;
+void Account::setPasswdHash(const std::string &passwd_hash) {
+	assert(passwd_hash.length() == 64);
+	this->passwd_hash = passwd_hash;
 }
 
-void Account::setAccountType(const AccountType& account_type) {
-    this->account_type = account_type;
+void Account::setAccountType(const AccountType &account_type) {
+	this->account_type = account_type;
 }
 
-bool Account::operator == (const Account& acc) const {
-    return username == acc.username;
+bool Account::operator==(const Account &acc) const {
+	return username == acc.username;
 }
 
-bool Account::operator != (const Account& acc) const {
-    return username != acc.username;
+bool Account::operator!=(const Account &acc) const {
+	return username != acc.username;
 }
 
-bool Account::operator < (const Account& acc) const {
-    return username < acc.username;
+bool Account::operator<(const Account &acc) const {
+	return username < acc.username;
 }
 
-bool Account::operator > (const Account& acc) const {
-    return username > acc.username;
+bool Account::operator>(const Account &acc) const {
+	return username > acc.username;
 }
 
-bool Account::operator <= (const Account& acc) const {
-    return username <= acc.username;
+bool Account::operator<=(const Account &acc) const {
+	return username <= acc.username;
 }
 
-bool Account::operator >= (const Account& acc) const {
-    return username >= acc.username;
+bool Account::operator>=(const Account &acc) const {
+	return username >= acc.username;
 }
 
-Account& Account::operator = (const Account& acc) {
-    username = acc.username;
-    passwd_hash = acc.passwd_hash;
-    account_type = acc.account_type;
-    return *this;
+Account &Account::operator=(const Account &acc) {
+	username = acc.username;
+	passwd_hash = acc.passwd_hash;
+	account_type = acc.account_type;
+	return *this;
 }
 
 const Account Account::NULL_ACCOUNT = Account();
@@ -113,10 +116,10 @@ const Account Account::NULL_ACCOUNT = Account();
  * This constructor initializes the account pool with an empty map of accounts and sets the size of the account pool to 0.
  */
 AccountPool::AccountPool() {
-    accountpool = std::map<std::string, Account>();
-    adminpool = std::map<std::string, Account>();
-    userpool = std::map<std::string, Account>();
-    sz = 0;
+	accountpool = std::map<std::string, Account>();
+	adminpool = std::map<std::string, Account>();
+	userpool = std::map<std::string, Account>();
+	sz = 0;
 }
 
 /**
@@ -127,14 +130,15 @@ AccountPool::AccountPool() {
  * @param begin An iterator pointing to the beginning of the range of accounts.
  * @param end An iterator pointing to the end of the range of accounts.
  */
-AccountPool::AccountPool(Account* begin, Account* end) {
-    accountpool = std::map<std::string, Account>();
-    adminpool = std::map<std::string, Account>();
-    userpool = std::map<std::string, Account>();
-    sz = 0;
-    for (Account* it = begin; it != end; it++) {
-        if (addAccount(*it) != 0) throw "Error: AccountPool::AccountPool(Account* begin, Account* end)";
-    }
+AccountPool::AccountPool(Account *begin, Account *end) {
+	accountpool = std::map<std::string, Account>();
+	adminpool = std::map<std::string, Account>();
+	userpool = std::map<std::string, Account>();
+	sz = 0;
+	for (Account *it = begin; it != end; it++) {
+		if (addAccount(*it) != 0)
+			throw "Error: AccountPool::AccountPool(Account* begin, Account* end)";
+	}
 }
 
 /**
@@ -144,14 +148,15 @@ AccountPool::AccountPool(Account* begin, Account* end) {
  * 
  * @param accounts The vector of accounts to initialize the account pool with.
  */
-AccountPool::AccountPool(const std::vector<Account>& accounts) {
-    accountpool = std::map<std::string, Account>();
-    adminpool = std::map<std::string, Account>();
-    userpool = std::map<std::string, Account>();
-    sz = 0;
-    for (Account acc : accounts) {
-        if (addAccount(acc) != 0) throw "Error: AccountPool::AccountPool(std::vector<Account> accounts)";
-    }
+AccountPool::AccountPool(const std::vector<Account> &accounts) {
+	accountpool = std::map<std::string, Account>();
+	adminpool = std::map<std::string, Account>();
+	userpool = std::map<std::string, Account>();
+	sz = 0;
+	for (Account acc : accounts) {
+		if (addAccount(acc) != 0)
+			throw "Error: AccountPool::AccountPool(std::vector<Account> accounts)";
+	}
 }
 
 /**
@@ -161,11 +166,11 @@ AccountPool::AccountPool(const std::vector<Account>& accounts) {
  * 
  * @param ap The AccountPool object to copy.
  */
-AccountPool::AccountPool(const AccountPool& ap) {
-    accountpool = ap.accountpool;
-    adminpool = ap.adminpool;
-    userpool = ap.userpool;
-    sz = ap.sz;
+AccountPool::AccountPool(const AccountPool &ap) {
+	accountpool = ap.accountpool;
+	adminpool = ap.adminpool;
+	userpool = ap.userpool;
+	sz = ap.sz;
 }
 
 /**
@@ -174,10 +179,10 @@ AccountPool::AccountPool(const AccountPool& ap) {
  * This destructor clears the account pool and frees the memory used by the account pool.
  */
 AccountPool::~AccountPool() {
-    accountpool.clear();
-    adminpool.clear();
-    userpool.clear();
-    sz = 0;
+	accountpool.clear();
+	adminpool.clear();
+	userpool.clear();
+	sz = 0;
 }
 
 /**
@@ -190,22 +195,39 @@ AccountPool::~AccountPool() {
  *         - 0x10: The account already exists in the pool.
  *         - 0x1F: An unknown error occurred.
  */
-int AccountPool::addAccount(const Account& acc) {
-    try {
-        if (accountpool.find(acc.getUsername()) != accountpool.end()) return 0x10;
-        accountpool[acc.getUsername()] = acc;
-        if (acc.getAccountType() == Account::AccountType::ADMIN) {
-            adminpool[acc.getUsername()] = acc;
-        }
-        else if (acc.getAccountType() == Account::AccountType::USER) {
-            userpool[acc.getUsername()] = acc;
-        }
-        sz++;
-        return 0;
-    }
-    catch (...) {
-        return 0x1F;
-    }
+int AccountPool::addAccount(const Account &acc) {
+	try {
+		if (accountpool.find(acc.getUsername()) != accountpool.end()) {
+			MyLogger::log("carinfo-manager-logger",
+						  MyLogger::LOG_LEVEL::DEBUG,
+						  "[AccountPool Add Account] \n- Username: " + acc.getUsername() +
+							  "\n- PasswdHash: " + acc.getPasswdHash() + "\n- AccountType: " +
+							  std::to_string((int)acc.getAccountType()) + "\n- Stuatus: 0x10");
+			return 0x10;
+		}
+		accountpool[acc.getUsername()] = acc;
+		if (acc.getAccountType() == Account::AccountType::ADMIN) {
+			adminpool[acc.getUsername()] = acc;
+		}
+		else if (acc.getAccountType() == Account::AccountType::USER) {
+			userpool[acc.getUsername()] = acc;
+		}
+		sz++;
+		MyLogger::log("carinfo-manager-logger",
+					  MyLogger::LOG_LEVEL::DEBUG,
+					  "[AccountPool Add Account] \n- Username: " + acc.getUsername() +
+						  "\n- PasswdHash: " + acc.getPasswdHash() + "\n- AccountType: " +
+						  std::to_string((int)acc.getAccountType()) + "\n- Stuatus: 0");
+		return 0;
+	}
+	catch (...) {
+		MyLogger::log("carinfo-manager-logger",
+					  MyLogger::LOG_LEVEL::ERROR,
+					  "[AccountPool Add Account] \n- Username: " + acc.getUsername() +
+						  "\n- PasswdHash: " + acc.getPasswdHash() + "\n- AccountType: " +
+						  std::to_string((int)acc.getAccountType()) + "\n- Stuatus: 0x1F");
+		return 0x1F;
+	}
 }
 
 /**
@@ -220,23 +242,35 @@ int AccountPool::addAccount(const Account& acc) {
  *         - 0x20: The account does not exist in the pool.
  *         - 0x2F: An unknown error occurred.
  */
-int AccountPool::removeAccount(const std::string& username) {
-    try {
-        if (accountpool.find(username) == accountpool.end()) return 0x20;
-        Account acc = accountpool[username];
-        accountpool.erase(username);
-        if (acc.getAccountType() == Account::AccountType::ADMIN) {
-            adminpool.erase(username);
-        }
-        else if (acc.getAccountType() == Account::AccountType::USER) {
-            userpool.erase(username);
-        }
-        sz--;
-        return 0;
-    }
-    catch (...) {
-        return 0x2F;
-    }
+int AccountPool::removeAccount(const std::string &username) {
+	try {
+		if (accountpool.find(username) == accountpool.end()) {
+			MyLogger::log("carinfo-manager-logger",
+						  MyLogger::LOG_LEVEL::DEBUG,
+						  "[AccountPool Remove Account] " + username + ". Stuatus: 0x20");
+			return 0x20;
+		}
+
+		Account acc = accountpool[username];
+		accountpool.erase(username);
+		if (acc.getAccountType() == Account::AccountType::ADMIN) {
+			adminpool.erase(username);
+		}
+		else if (acc.getAccountType() == Account::AccountType::USER) {
+			userpool.erase(username);
+		}
+		sz--;
+		MyLogger::log("carinfo-manager-logger",
+					  MyLogger::LOG_LEVEL::DEBUG,
+					  "[AccountPool Remove Account] " + username + ". Stuatus: 0");
+		return 0;
+	}
+	catch (...) {
+		MyLogger::log("carinfo-manager-logger",
+					  MyLogger::LOG_LEVEL::ERROR,
+					  "[AccountPool Remove Account] " + username + ". Stuatus: 0x2F");
+		return 0x2F;
+	}
 }
 
 /**
@@ -251,8 +285,8 @@ int AccountPool::removeAccount(const std::string& username) {
  *         - 0x30: The account does not exist in the pool.
  *         - 0x3F: An unknown error occurred.
  */
-int AccountPool::removeAccount(const Account& acc) {
-    return removeAccount(acc.getUsername());
+int AccountPool::removeAccount(const Account &acc) {
+	return removeAccount(acc.getUsername());
 }
 
 /**
@@ -267,15 +301,47 @@ int AccountPool::removeAccount(const Account& acc) {
  *         - 0x31: The new account could not be added to the pool.
  *         - 0x3F: An unknown error occurred.
  */
-int AccountPool::updateAccount(const Account& original_acc, const Account& new_acc) {
-    try {
-        if (removeAccount(original_acc) != 0) return 0x30;
-        if (addAccount(new_acc) != 0) return 0x31;
-        return 0;
-    }
-    catch (...) {
-        return 0x3F;
-    }
+int AccountPool::updateAccount(const Account &original_acc, const Account &new_acc) {
+	try {
+		if (removeAccount(original_acc) != 0) {
+			MyLogger::log(
+				"carinfo-manager-logger",
+				MyLogger::LOG_LEVEL::DEBUG,
+				"[AccountPool Update Account] \n- Original Username: " +
+					original_acc.getUsername() + "\n- New Username: " + new_acc.getUsername() +
+					"\n- New PasswdHash: " + new_acc.getPasswdHash() + "\n- New AccountType: " +
+					std::to_string((int)new_acc.getAccountType()) + "\n- Stuatus: 0x30");
+			return 0x30;
+		}
+		if (addAccount(new_acc) != 0) {
+			MyLogger::log(
+				"carinfo-manager-logger",
+				MyLogger::LOG_LEVEL::DEBUG,
+				"[AccountPool Update Account] \n- Original Username: " +
+					original_acc.getUsername() + "\n- New Username: " + new_acc.getUsername() +
+					"\n- New PasswdHash: " + new_acc.getPasswdHash() + "\n- New AccountType: " +
+					std::to_string((int)new_acc.getAccountType()) + "\n- Stuatus: 0x31");
+			return 0x31;
+		}
+		MyLogger::log(
+			"carinfo-manager-logger",
+			MyLogger::LOG_LEVEL::DEBUG,
+			"[AccountPool Update Account] \n- Original Username: " + original_acc.getUsername() +
+				"\n- New Username: " + new_acc.getUsername() +
+				"\n- New PasswdHash: " + new_acc.getPasswdHash() + "\n- New AccountType: " +
+				std::to_string((int)new_acc.getAccountType()) + "\n- Stuatus: 0");
+		return 0;
+	}
+	catch (...) {
+		MyLogger::log(
+			"carinfo-manager-logger",
+			MyLogger::LOG_LEVEL::ERROR,
+			"[AccountPool Update Account] \n- Original Username: " + original_acc.getUsername() +
+				"\n- New Username: " + new_acc.getUsername() +
+				"\n- New PasswdHash: " + new_acc.getPasswdHash() + "\n- New AccountType: " +
+				std::to_string((int)new_acc.getAccountType()) + "\n- Stuatus: 0x3F");
+		return 0x3F;
+	}
 }
 
 /**
@@ -285,9 +351,40 @@ int AccountPool::updateAccount(const Account& original_acc, const Account& new_a
  * @param username The username of the account to retrieve.
  * @return The account associated with the given username, or a null account if not found.
  */
-Account AccountPool::getAccount(const std::string& username) const {
-    if (accountpool.find(username) == accountpool.end()) return Account::NULL_ACCOUNT;
-    return accountpool.at(username);
+Account AccountPool::getAccount(const std::string &username) const {
+	if (accountpool.find(username) == accountpool.end())
+		return Account::NULL_ACCOUNT;
+	MyLogger::log(
+		"carinfo-manager-logger",
+		MyLogger::LOG_LEVEL::DEBUG,
+		"[AccountPool Get Account] \n- Username: " + username +
+			"\n- PasswdHash: " + accountpool.at(username).getPasswdHash() +
+			"\n- AccountType: " + std::to_string((int)accountpool.at(username).getAccountType()));
+	return accountpool.at(username);
+}
+
+/**
+ * Retrieves a list of accounts that match the given username.
+ * 
+ * This function searches for accounts in the account pool whose usernames contain the given username as a substring.
+ * 
+ * @param username The username to search for.
+ * @return A vector containing all accounts whose usernames contain the given username as a substring.
+ * 	   If no accounts are found, returns an empty vector.
+ */
+AccountPool AccountPool::getAccountLike(const std::string &username) const {
+	AccountPool ap;
+	for (auto it = accountpool.begin(); it != accountpool.end(); it++) {
+		if (it->first.find(username) != std::string::npos)
+			ap.addAccount(it->second);
+	}
+	std::stringstream ss;
+	ap.save(ss);
+	MyLogger::log("carinfo-manager-logger",
+				  MyLogger::LOG_LEVEL::DEBUG,
+				  "[AccountPool Get Account Like] \n- Username: " + username +
+					  "\n- AccountPool: " + ss.str());
+	return ap;
 }
 
 /**
@@ -300,10 +397,27 @@ Account AccountPool::getAccount(const std::string& username) const {
  *         - WRONG_PASSWORD if the password hash does not match the account's password hash.
  *         - SUCCESS if the account is successfully verified.
  */
-AccountPool::AccountVerifyResult AccountPool::verifyAccount(const std::string& username, const std::string& passwd_hash) const {
-    if (accountpool.find(username) == accountpool.end()) return AccountVerifyResult::ACCOUNT_NOT_FOUND;
-    if (accountpool.at(username).getPasswdHash() != passwd_hash) return AccountVerifyResult::WRONG_PASSWORD;
-    return AccountVerifyResult::SUCCESS;
+AccountPool::AccountVerifyResult AccountPool::verifyAccount(const std::string &username,
+															const std::string &passwd_hash) const {
+	if (accountpool.find(username) == accountpool.end()) {
+		MyLogger::log("carinfo-manager-logger",
+					  MyLogger::LOG_LEVEL::DEBUG,
+					  "[AccountPool Verify Account] \n- Username: " + username +
+						  "\n- PasswdHash: " + passwd_hash + "\n- Stuatus: 1");
+		return AccountVerifyResult::ACCOUNT_NOT_FOUND;
+	}
+	if (accountpool.at(username).getPasswdHash() != passwd_hash) {
+		MyLogger::log("carinfo-manager-logger",
+					  MyLogger::LOG_LEVEL::DEBUG,
+					  "[AccountPool Verify Account] \n- Username: " + username +
+						  "\n- PasswdHash: " + passwd_hash + "\n- Stuatus: 2");
+		return AccountVerifyResult::WRONG_PASSWORD;
+	}
+	MyLogger::log("carinfo-manager-logger",
+				  MyLogger::LOG_LEVEL::DEBUG,
+				  "[AccountPool Verify Account] \n- Username: " + username +
+					  "\n- PasswdHash: " + passwd_hash + "\n- Stuatus: 0");
+	return AccountVerifyResult::SUCCESS;
 }
 
 /**
@@ -312,9 +426,20 @@ AccountPool::AccountVerifyResult AccountPool::verifyAccount(const std::string& u
  * @param username The username of the account.
  * @return The account type associated with the username. If the username is not found in the account pool, returns Account::AccountType::NONETYPE.
  */
-Account::AccountType AccountPool::getAccountType(const std::string& username) const {
-    if (accountpool.find(username) == accountpool.end()) return Account::AccountType::NONETYPE;
-    return accountpool.at(username).getAccountType();
+Account::AccountType AccountPool::getAccountType(const std::string &username) const {
+	if (accountpool.find(username) == accountpool.end()) {
+		MyLogger::log(
+			"carinfo-manager-logger",
+			MyLogger::LOG_LEVEL::DEBUG,
+			"[AccountPool Get Account Type] \n- Username: " + username + "\n- Stuatus: 1");
+		return Account::AccountType::NONETYPE;
+	}
+	MyLogger::log("carinfo-manager-logger",
+				  MyLogger::LOG_LEVEL::DEBUG,
+				  "[AccountPool Get Account Type] \n- Username: " + username + "\n- AccountType: " +
+					  std::to_string((int)accountpool.at(username).getAccountType()) +
+					  "\n- Stuatus: 0");
+	return accountpool.at(username).getAccountType();
 }
 
 /**
@@ -323,7 +448,10 @@ Account::AccountType AccountPool::getAccountType(const std::string& username) co
  * @return The size of the account pool.
  */
 size_t AccountPool::size() const {
-    return sz;
+	MyLogger::log("carinfo-manager-logger",
+				  MyLogger::LOG_LEVEL::DEBUG,
+				  "[AccountPool Size] \n- Size: " + std::to_string(sz));
+	return sz;
 }
 
 /**
@@ -332,7 +460,10 @@ size_t AccountPool::size() const {
  * @return True if the account pool is empty, false otherwise.
  */
 bool AccountPool::empty() const {
-    return sz == 0;
+	MyLogger::log("carinfo-manager-logger",
+				  MyLogger::LOG_LEVEL::DEBUG,
+				  "[AccountPool Empty] \n- Stuatus: " + std::to_string(sz == 0));
+	return sz == 0;
 }
 
 /**
@@ -344,16 +475,22 @@ bool AccountPool::empty() const {
  *         - 0x4F: An unknown error occurred.
  */
 int AccountPool::clear() {
-    try {
-        accountpool.clear();
-        adminpool.clear();
-        userpool.clear();
-        sz = 0;
-        return 0;
-    }
-    catch (...) {
-        return 0x4F;
-    }
+	try {
+		accountpool.clear();
+		adminpool.clear();
+		userpool.clear();
+		sz = 0;
+		MyLogger::log("carinfo-manager-logger",
+					  MyLogger::LOG_LEVEL::DEBUG,
+					  "[AccountPool Clear] \n- Stuatus: 0");
+		return 0;
+	}
+	catch (...) {
+		MyLogger::log("carinfo-manager-logger",
+					  MyLogger::LOG_LEVEL::ERROR,
+					  "[AccountPool Clear] \n- Stuatus: 0x4F");
+		return 0x4F;
+	}
 }
 
 /**
@@ -371,27 +508,63 @@ int AccountPool::clear() {
  *         - 0x55: An error occurred while adding an account to the account pool.
  *         - 0x5F: An unknown error occurred.
  */
-int AccountPool::load(std::istream& is) {
-    if (!is) return 0x50;
-    try {
-        if (clear() != 0) return 0x51;
-        json load_json_obj = json::parse(is);
-        for (json::iterator it = load_json_obj.begin(); it != load_json_obj.end(); it++) {
-            if (!it.value().is_object()) return 0x52;
-            if (!it.value().contains("username") || !it.value().contains("passwd_hash") || !it.value().contains("account_type")) return 0x53;
-            if (!it.value()["username"].is_string() || !it.value()["passwd_hash"].is_string() || !it.value()["account_type"].is_number_integer()) return 0x54;
-            Account acc(
-                std::string(it.key()), 
-                std::string(it.value()["passwd_hash"]), 
-                (Account::AccountType)(int)(it.value()["account_type"])
-        );
-            if (addAccount(acc) != 0) return 0x55;
-        }
-        return 0;
-    }
-    catch (...) {
-        return 0x5F;
-    }
+int AccountPool::load(std::istream &is) {
+	if (!is) {
+		MyLogger::log("carinfo-manager-logger",
+					  MyLogger::LOG_LEVEL::ERROR,
+					  "[AccountPool Load] \n- Stuatus: 0x50");
+		return 0x50;
+	}
+	try {
+		if (clear() != 0) {
+			MyLogger::log("carinfo-manager-logger",
+						  MyLogger::LOG_LEVEL::ERROR,
+						  "[AccountPool Load] \n- Stuatus: 0x51");
+			return 0x51;
+		}
+		json load_json_obj = json::parse(is);
+		for (json::iterator it = load_json_obj.begin(); it != load_json_obj.end(); it++) {
+			if (!it.value().is_object()) {
+				MyLogger::log("carinfo-manager-logger",
+							  MyLogger::LOG_LEVEL::ERROR,
+							  "[AccountPool Load] \n- Stuatus: 0x52");
+				return 0x52;
+			}
+			if (!it.value().contains("username") || !it.value().contains("passwd_hash") ||
+				!it.value().contains("account_type")) {
+				MyLogger::log("carinfo-manager-logger",
+							  MyLogger::LOG_LEVEL::ERROR,
+							  "[AccountPool Load] \n- Stuatus: 0x53");
+				return 0x53;
+			}
+			if (!it.value()["username"].is_string() || !it.value()["passwd_hash"].is_string() ||
+				!it.value()["account_type"].is_number_integer()) {
+				MyLogger::log("carinfo-manager-logger",
+							  MyLogger::LOG_LEVEL::ERROR,
+							  "[AccountPool Load] \n- Stuatus: 0x54");
+				return 0x54;
+			}
+			Account acc(std::string(it.key()),
+						std::string(it.value()["passwd_hash"]),
+						(Account::AccountType)(int)(it.value()["account_type"]));
+			if (addAccount(acc) != 0) {
+				MyLogger::log("carinfo-manager-logger",
+							  MyLogger::LOG_LEVEL::ERROR,
+							  "[AccountPool Load] \n- Stuatus: 0x55");
+				return 0x55;
+			}
+		}
+		MyLogger::log("carinfo-manager-logger",
+					  MyLogger::LOG_LEVEL::DEBUG,
+					  "[AccountPool Load] \n- Stuatus: 0");
+		return 0;
+	}
+	catch (...) {
+		MyLogger::log("carinfo-manager-logger",
+					  MyLogger::LOG_LEVEL::ERROR,
+					  "[AccountPool Load] \n- Stuatus: 0x5F");
+		return 0x5F;
+	}
 }
 
 /**
@@ -402,24 +575,35 @@ int AccountPool::load(std::istream& is) {
  *         - 0x60: The output stream is invalid.
  *         - 0x6F: An unknown error occurred.
  */
-int AccountPool::save(std::ostream& os) const {
-    if (!os) return 0x60;
-    try {
-        // Write size
-        json save_json_obj;
-        for (auto it = accountpool.begin(); it != accountpool.end(); it++) {
-            json acc_json_obj;
-            acc_json_obj["username"] = it->second.getUsername();
-            acc_json_obj["passwd_hash"] = it->second.getPasswdHash();
-            acc_json_obj["account_type"] = (int)it->second.getAccountType();
-            save_json_obj[it->first] = acc_json_obj;
-        }
-        os << save_json_obj.dump(4);
-        return 0;
-    }
-    catch (...) {
-        return 0x6F;
-    }
+int AccountPool::save(std::ostream &os) const {
+	if (!os) {
+		MyLogger::log("carinfo-manager-logger",
+					  MyLogger::LOG_LEVEL::ERROR,
+					  "[AccountPool Save] \n- Stuatus: 0x60");
+		return 0x60;
+	}
+	try {
+		// Write size
+		json save_json_obj;
+		for (auto it = accountpool.begin(); it != accountpool.end(); it++) {
+			json acc_json_obj;
+			acc_json_obj["username"] = it->second.getUsername();
+			acc_json_obj["passwd_hash"] = it->second.getPasswdHash();
+			acc_json_obj["account_type"] = (int)it->second.getAccountType();
+			save_json_obj[it->first] = acc_json_obj;
+		}
+		os << save_json_obj.dump(4);
+		MyLogger::log("carinfo-manager-logger",
+					  MyLogger::LOG_LEVEL::DEBUG,
+					  "[AccountPool Save] \n- Stuatus: 0");
+		return 0;
+	}
+	catch (...) {
+		MyLogger::log("carinfo-manager-logger",
+					  MyLogger::LOG_LEVEL::ERROR,
+					  "[AccountPool Save] \n- Stuatus: 0x6F");
+		return 0x6F;
+	}
 }
 
 /**
@@ -428,11 +612,13 @@ int AccountPool::save(std::ostream& os) const {
  * @return A vector containing all the accounts in the account pool.
  */
 std::vector<Account> AccountPool::list() const {
-    std::vector<Account> accounts;
-    for (auto it = accountpool.begin(); it != accountpool.end(); it++) {
-        accounts.push_back(it->second);
-    }
-    return accounts;
+	std::vector<Account> accounts;
+	for (auto it = accountpool.begin(); it != accountpool.end(); it++) {
+		accounts.push_back(it->second);
+	}
+	MyLogger::log(
+		"carinfo-manager-logger", MyLogger::LOG_LEVEL::DEBUG, "[AccountPool List] \n- Stuatus: 0");
+	return accounts;
 }
 
 /**
@@ -443,8 +629,9 @@ std::vector<Account> AccountPool::list() const {
  * @param ap The AccountPool object to compare with.
  * @return True if the AccountPool objects are equal, false otherwise.
  */
-bool AccountPool::operator == (const AccountPool& ap) const {
-    return sz == ap.sz && accountpool == ap.accountpool && adminpool == ap.adminpool && userpool == ap.userpool;
+bool AccountPool::operator==(const AccountPool &ap) const {
+	return sz == ap.sz && accountpool == ap.accountpool && adminpool == ap.adminpool &&
+		   userpool == ap.userpool;
 }
 
 /**
@@ -455,8 +642,9 @@ bool AccountPool::operator == (const AccountPool& ap) const {
  * @param ap The AccountPool object to compare with.
  * @return True if the AccountPool objects are not equal, false otherwise.
  */
-bool AccountPool::operator != (const AccountPool& ap) const {
-    return sz != ap.sz || accountpool != ap.accountpool || adminpool != ap.adminpool || userpool != ap.userpool;
+bool AccountPool::operator!=(const AccountPool &ap) const {
+	return sz != ap.sz || accountpool != ap.accountpool || adminpool != ap.adminpool ||
+		   userpool != ap.userpool;
 }
 
 /**
@@ -467,10 +655,10 @@ bool AccountPool::operator != (const AccountPool& ap) const {
  * @param ap The AccountPool object to compare with.
  * @return True if the size of the AccountPool object is less than the size of the other AccountPool object, false otherwise.
  */
-AccountPool& AccountPool::operator = (const AccountPool& ap) {
-    sz = ap.sz;
-    accountpool = ap.accountpool;
-    adminpool = ap.adminpool;
-    userpool = ap.userpool;
-    return *this;
+AccountPool &AccountPool::operator=(const AccountPool &ap) {
+	sz = ap.sz;
+	accountpool = ap.accountpool;
+	adminpool = ap.adminpool;
+	userpool = ap.userpool;
+	return *this;
 }

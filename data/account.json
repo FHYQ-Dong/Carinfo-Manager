@@ -1,0 +1,12 @@
+{
+    "admin1": {
+        "account_type": 1,
+        "passwd_hash": "4b7897eed3bebaa5cfe986afb4075ba5d9f42959bc9b89cf6af6c3af403ef14e",
+        "username": "admin1"
+    },
+    "user1": {
+        "account_type": 2,
+        "passwd_hash": "4b7897eed3bebaa5cfe986afb4075ba5d9f42959bc9b89cf6af6c3af403ef14e",
+        "username": "user1"
+    }
+}

@@ -15,115 +15,124 @@
  */
 
 #include "carinfo-manager/carpool.hpp"
+#include "carinfo-manager/log.hpp"
 #include <fstream>
 #include "json/json.hpp"
 using nlohmann::json;
 
 Car::Car() {
-    car_id = "";
-    car_type = "";
-    car_color = "";
-    car_owner = "";
-    car_year = 0;
-    car_img_path = "";
+	car_id = "";
+	car_type = "";
+	car_color = "";
+	car_owner = "";
+	car_year = 0;
+	car_img_path = "";
 }
 
-Car::Car(const std::string& id, const std::string& type, const std::string& owner, \
-    const std::string& color, const int year, const std::string& img_path) {
-    car_id = id;
-    car_type = type;
-    car_owner = owner;
-    car_color = color;
-    car_year = year;
-    car_img_path = img_path;
+Car::Car(const std::string &id,
+		 const std::string &type,
+		 const std::string &owner,
+		 const std::string &color,
+		 const int year,
+		 const std::string &img_path) {
+	car_id = id;
+	car_type = type;
+	car_owner = owner;
+	car_color = color;
+	car_year = year;
+	car_img_path = img_path;
 }
 
-Car::Car(const Car& c) : \
-    car_id(c.car_id), car_type(c.car_type), car_color(c.car_color), \
-    car_owner(c.car_owner), car_year(c.car_year), car_img_path(c.car_img_path) {}
+Car::Car(const Car &c)
+	: car_id(c.car_id),
+	  car_type(c.car_type),
+	  car_color(c.car_color),
+	  car_owner(c.car_owner),
+	  car_year(c.car_year),
+	  car_img_path(c.car_img_path) {}
 
 Car::~Car() {}
 
-void Car::setId(const std::string& id) {
-    car_id = id;
+void Car::setId(const std::string &id) {
+	car_id = id;
 }
 
-void Car::setType(const std::string& type) {
-    car_type = type;
+void Car::setType(const std::string &type) {
+	car_type = type;
 }
 
-void Car::setOwner(const std::string& owner) {
-    car_owner = owner;
+void Car::setOwner(const std::string &owner) {
+	car_owner = owner;
 }
 
-void Car::setColor(const std::string& color) {
-    car_color = color;
+void Car::setColor(const std::string &color) {
+	car_color = color;
 }
 
 void Car::setYear(const int year) {
-    car_year = year;
+	car_year = year;
 }
 
-void Car::setImagePath(const std::string& img_path) {
-    car_img_path = img_path;
+void Car::setImagePath(const std::string &img_path) {
+	car_img_path = img_path;
 }
 
 std::string Car::getId() const {
-    return car_id;
+	return car_id;
 }
 
 std::string Car::getType() const {
-    return car_type;
+	return car_type;
 }
 
 std::string Car::getOwner() const {
-    return car_owner;
+	return car_owner;
 }
 
 std::string Car::getColor() const {
-    return car_color;
+	return car_color;
 }
 
 int Car::getYear() const {
-    return car_year;
+	return car_year;
 }
 
 std::string Car::getImagePath() const {
-    return car_img_path;
+	return car_img_path;
 }
 
-bool Car::operator == (const Car& c) const {
-    return car_id == c.car_id;
+bool Car::operator==(const Car &c) const {
+	return car_id == c.car_id;
 }
 
-bool Car::operator != (const Car& c) const {
-    return car_id != c.car_id;
+bool Car::operator!=(const Car &c) const {
+	return car_id != c.car_id;
 }
 
-bool Car::operator < (const Car& c) const {
-    return car_id < c.car_id;
+bool Car::operator<(const Car &c) const {
+	return car_id < c.car_id;
 }
 
-bool Car::operator > (const Car& c) const {
-    return car_id > c.car_id;
+bool Car::operator>(const Car &c) const {
+	return car_id > c.car_id;
 }
 
-bool Car::operator <= (const Car& c) const {
-    return car_id <= c.car_id;
+bool Car::operator<=(const Car &c) const {
+	return car_id <= c.car_id;
 }
 
-bool Car::operator >= (const Car& c) const {
-    return car_id >= c.car_id;
+bool Car::operator>=(const Car &c) const {
+	return car_id >= c.car_id;
 }
 
-Car& Car::operator = (const Car& c) {
-    car_id = c.car_id;
-    car_type = c.car_type;
-    car_owner = c.car_owner;
-    car_color = c.car_color;
-    car_year = c.car_year;
-    car_img_path = c.car_img_path;
-    return *this;
+Car &Car::operator=(const Car &c) {
+	car_id = c.car_id;
+	car_type = c.car_type;
+	car_owner = c.car_owner;
+	car_color = c.car_color;
+	car_year = c.car_year;
+	car_img_path = c.car_img_path;
+	return *this;
 }
 
 const Car Car::NULL_CAR = Car();
@@ -135,11 +144,11 @@ const Car Car::NULL_CAR = Car();
  * It also sets the initial size of the carpool to 0.
  */
 CarPool::CarPool() {
-    carpool_byid = std::map<std::string, Car>();
-    carpool_bycolor = std::multimap<std::string, Car>();
-    carpool_bytype = std::multimap<std::string, Car>();
-    carpool_byowner = std::multimap<std::string, Car>();
-    sz = 0;
+	carpool_byid = std::map<std::string, Car>();
+	carpool_bycolor = std::multimap<std::string, Car>();
+	carpool_bytype = std::multimap<std::string, Car>();
+	carpool_byowner = std::multimap<std::string, Car>();
+	sz = 0;
 }
 
 /**
@@ -150,13 +159,14 @@ CarPool::CarPool() {
  * @param begin An iterator pointing to the first car in the range.
  * @param end An iterator pointing to the end of the range.
  */
-CarPool::CarPool(Car* begin, Car* end) {
-    carpool_byid = std::map<std::string, Car>();
-    carpool_bycolor = std::multimap<std::string, Car>();
-    carpool_bytype = std::multimap<std::string, Car>();
-    carpool_byowner = std::multimap<std::string, Car>();
-    sz = 0;
-    for (Car* i = begin; i != end; i++) addCar(*i);
+CarPool::CarPool(Car *begin, Car *end) {
+	carpool_byid = std::map<std::string, Car>();
+	carpool_bycolor = std::multimap<std::string, Car>();
+	carpool_bytype = std::multimap<std::string, Car>();
+	carpool_byowner = std::multimap<std::string, Car>();
+	sz = 0;
+	for (Car *i = begin; i != end; i++)
+		addCar(*i);
 }
 
 /**
@@ -166,13 +176,14 @@ CarPool::CarPool(Car* begin, Car* end) {
  * 
  * @param cars A vector containing the cars to be added to the carpool.
  */
-CarPool::CarPool(const std::vector<Car>& cars) {
-    carpool_byid = std::map<std::string, Car>();
-    carpool_bycolor = std::multimap<std::string, Car>();
-    carpool_bytype = std::multimap<std::string, Car>();
-    carpool_byowner = std::multimap<std::string, Car>();
-    sz = 0;
-    for (Car car : cars) addCar(car);
+CarPool::CarPool(const std::vector<Car> &cars) {
+	carpool_byid = std::map<std::string, Car>();
+	carpool_bycolor = std::multimap<std::string, Car>();
+	carpool_bytype = std::multimap<std::string, Car>();
+	carpool_byowner = std::multimap<std::string, Car>();
+	sz = 0;
+	for (Car car : cars)
+		addCar(car);
 }
 
 /**
@@ -182,12 +193,12 @@ CarPool::CarPool(const std::vector<Car>& cars) {
  * 
  * @param cp The CarPool object to be copied.
  */
-CarPool::CarPool(const CarPool& cp) {
-    carpool_byid = cp.carpool_byid;
-    carpool_bycolor = cp.carpool_bycolor;
-    carpool_bytype = cp.carpool_bytype;
-    carpool_byowner = cp.carpool_byowner;
-    sz = cp.sz;
+CarPool::CarPool(const CarPool &cp) {
+	carpool_byid = cp.carpool_byid;
+	carpool_bycolor = cp.carpool_bycolor;
+	carpool_bytype = cp.carpool_bytype;
+	carpool_byowner = cp.carpool_byowner;
+	sz = cp.sz;
 }
 
 /**
@@ -196,11 +207,11 @@ CarPool::CarPool(const CarPool& cp) {
  * This destructor clears the carpool data by removing all cars from the carpool containers.
  */
 CarPool::~CarPool() {
-    carpool_byid.clear();
-    carpool_bycolor.clear();
-    carpool_bytype.clear();
-    carpool_byowner.clear();
-    sz = 0;
+	carpool_byid.clear();
+	carpool_bycolor.clear();
+	carpool_bytype.clear();
+	carpool_byowner.clear();
+	sz = 0;
 }
 
 /**
@@ -211,19 +222,23 @@ CarPool::~CarPool() {
  *         - 0x70: If the car with the same ID already exists in the carpool.
  *         - 0x7F: If an unknown exception occurs while adding the car.
  */
-int CarPool::addCar(const Car& car) {
-    try {
-        if (carpool_byid.find(car.getId()) != carpool_byid.end()) return 0x70;
-        carpool_byid[car.getId()] = car;
-        carpool_bycolor.insert(std::make_pair(car.getColor(), car));
-        carpool_bytype.insert(std::make_pair(car.getType(), car));
-        carpool_byowner.insert(std::make_pair(car.getOwner(), car));
-        sz++;
-        return 0;
-    }
-    catch (...) {
-        return 0x7F;
-    }
+int CarPool::addCar(const Car &car) {
+	try {
+		if (carpool_byid.find(car.getId()) != carpool_byid.end()){
+			MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Add Car] \n- Car ID: " + car.getId() + "\n- Car Owner: " + car.getOwner() + "\n- Car Type: " + car.getType() + "\n- Car Color: " + car.getColor() + "\n- Car Year: " + std::to_string(car.getYear()) + "\n- Car Image Path: " + car.getImagePath() + "\n- Status: 0x70");
+			return 0x70;}
+		carpool_byid[car.getId()] = car;
+		carpool_bycolor.insert(std::make_pair(car.getColor(), car));
+		carpool_bytype.insert(std::make_pair(car.getType(), car));
+		carpool_byowner.insert(std::make_pair(car.getOwner(), car));
+		sz++;
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::DEBUG, "[CarPool Add Car] \n- Car ID: " + car.getId() + "\n- Car Owner: " + car.getOwner() + "\n- Car Type: " + car.getType() + "\n- Car Color: " + car.getColor() + "\n- Car Year: " + std::to_string(car.getYear()) + "\n- Car Image Path: " + car.getImagePath() + "\n- Status: 0");
+		return 0;
+	}
+	catch (...) {
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Add Car] \n- Car ID: " + car.getId() + "\n- Car Owner: " + car.getOwner() + "\n- Car Type: " + car.getType() + "\n- Car Color: " + car.getColor() + "\n- Car Year: " + std::to_string(car.getYear()) + "\n- Car Image Path: " + car.getImagePath() + "\n- Status: 0x7F");
+		return 0x7F;
+	}
 }
 
 /**
@@ -232,10 +247,9 @@ int CarPool::addCar(const Car& car) {
  * @param car The car to be removed.
  * @return The number of cars removed (0 or 1).
  */
-int CarPool::removeCar(const Car& car) {
-    return removeCar(car.getId());
+int CarPool::removeCar(const Car &car) {
+	return removeCar(car.getId());
 }
-
 
 /**
  * @brief Removes a car from the carpool based on its ID.
@@ -247,40 +261,47 @@ int CarPool::removeCar(const Car& car) {
  *        - 0x80: If the car with the specified ID does not exist in the carpool.
  *        - 0x8F: If an unknown exception occurs while removing the car.
  */
-int CarPool::removeCar(const std::string& id) {
-    try{
-        auto it_id = carpool_byid.find(id);
-        if (it_id == carpool_byid.end()) return 0x80;
+int CarPool::removeCar(const std::string &id) {
+	try {
+		auto it_id = carpool_byid.find(id);
+		if (it_id == carpool_byid.end()){
+			MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Remove Car] \n- Car ID: " + id + "\n- Status: 0x80");
+			return 0x80;}
 
-        Car car = it_id->second;
-        carpool_byid.erase(it_id);
-        auto it_cl_bg = carpool_bycolor.lower_bound(car.getColor()), it_cl_ed = carpool_bycolor.upper_bound(car.getColor());
-        for (auto it_cl = it_cl_bg; it_cl != it_cl_ed; it_cl++) {
-            if (it_cl->second.getId() == car.getId()) {
-                carpool_bycolor.erase(it_cl);
-                break;
-            }
-        }
-        auto it_on_bg = carpool_byowner.lower_bound(car.getOwner()), it_on_ed = carpool_byowner.upper_bound(car.getOwner());
-        for (auto it_on = it_on_bg; it_on != it_on_ed; it_on++) {
-            if (it_on->second.getId() == car.getId()) {
-                carpool_byowner.erase(it_on);
-                break;
-            }
-        }
-        auto it_ty_bg = carpool_bytype.lower_bound(car.getType()), it_ty_ed = carpool_bytype.upper_bound(car.getType());
-        for (auto it_ty = it_ty_bg; it_ty != it_ty_ed; it_ty++) {
-            if (it_ty->second.getId() == car.getId()) {
-                carpool_bytype.erase(it_ty);
-                break;
-            }
-        }
-        sz--;
-        return 0;
-    }
-    catch (...) {
-        return 0x8F;
-    }
+		Car car = it_id->second;
+		carpool_byid.erase(it_id);
+		auto it_cl_bg = carpool_bycolor.lower_bound(car.getColor()),
+			 it_cl_ed = carpool_bycolor.upper_bound(car.getColor());
+		for (auto it_cl = it_cl_bg; it_cl != it_cl_ed; it_cl++) {
+			if (it_cl->second.getId() == car.getId()) {
+				carpool_bycolor.erase(it_cl);
+				break;
+			}
+		}
+		auto it_on_bg = carpool_byowner.lower_bound(car.getOwner()),
+			 it_on_ed = carpool_byowner.upper_bound(car.getOwner());
+		for (auto it_on = it_on_bg; it_on != it_on_ed; it_on++) {
+			if (it_on->second.getId() == car.getId()) {
+				carpool_byowner.erase(it_on);
+				break;
+			}
+		}
+		auto it_ty_bg = carpool_bytype.lower_bound(car.getType()),
+			 it_ty_ed = carpool_bytype.upper_bound(car.getType());
+		for (auto it_ty = it_ty_bg; it_ty != it_ty_ed; it_ty++) {
+			if (it_ty->second.getId() == car.getId()) {
+				carpool_bytype.erase(it_ty);
+				break;
+			}
+		}
+		sz--;
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::DEBUG, "[CarPool Remove Car] \n- Car ID: " + id + "\n- Status: 0");
+		return 0;
+	}
+	catch (...) {
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Remove Car] \n- Car ID: " + id + "\n- Status: 0x8F");
+		return 0x8F;
+	}
 }
 
 /**
@@ -297,15 +318,21 @@ int CarPool::removeCar(const std::string& id) {
  *         - 0x91: If the addition of the new car fails.
  *         - 0x9F: If an exception occurs during the update process.
  */
-int CarPool::updateCar(const Car& original_car, const Car& new_car) {
-    try {
-        if (removeCar(original_car)) return 0x90;
-        if (addCar(new_car)) return 0x91;
-        return 0;
-    }
-    catch (...) {
-        return 0x9F;
-    }
+int CarPool::updateCar(const Car &original_car, const Car &new_car) {
+	try {
+		if (removeCar(original_car)){
+			MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Update Car] \n- Original Car ID: " + original_car.getId() + "\n- New Car ID: " + new_car.getId() + "\n- New Car Owner: " + new_car.getOwner() + "\n- New Car Type: " + new_car.getType() + "\n- New Car Color: " + new_car.getColor() + "\n- New Car Year: " + std::to_string(new_car.getYear()) + "\n- New Car Image Path: " + new_car.getImagePath() + "\n- Status: 0x90");
+			return 0x90;}
+		if (addCar(new_car)){
+			MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Update Car] \n- Original Car ID: " + original_car.getId() + "\n- New Car ID: " + new_car.getId() + "\n- New Car Owner: " + new_car.getOwner() + "\n- New Car Type: " + new_car.getType() + "\n- New Car Color: " + new_car.getColor() + "\n- New Car Year: " + std::to_string(new_car.getYear()) + "\n- New Car Image Path: " + new_car.getImagePath() + "\n- Status: 0x91");
+			return 0x91;}
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::DEBUG, "[CarPool Update Car] \n- Original Car ID: " + original_car.getId() + "\n- New Car ID: " + new_car.getId() + "\n- New Car Owner: " + new_car.getOwner() + "\n- New Car Type: " + new_car.getType() + "\n- New Car Color: " + new_car.getColor() + "\n- New Car Year: " + std::to_string(new_car.getYear()) + "\n- New Car Image Path: " + new_car.getImagePath() + "\n- Status: 0");
+		return 0;
+	}
+	catch (...) {
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Update Car] \n- Original Car ID: " + original_car.getId() + "\n- New Car ID: " + new_car.getId() + "\n- New Car Owner: " + new_car.getOwner() + "\n- New Car Type: " + new_car.getType() + "\n- New Car Color: " + new_car.getColor() + "\n- New Car Year: " + std::to_string(new_car.getYear()) + "\n- New Car Image Path: " + new_car.getImagePath() + "\n- Status: 0x9F");
+		return 0x9F;
+	}
 }
 
 /**
@@ -320,15 +347,21 @@ int CarPool::updateCar(const Car& original_car, const Car& new_car) {
  *         - 0x91: If the addition of the new car fails.
  *         - 0x9F: If an exception occurs during the update process.
  */
-int CarPool::updateCar(const std::string& id, const Car& new_car) {
-    try {
-        if (removeCar(id)) return 0x90;
-        if (addCar(new_car)) return 0x91;
-        return 0;
-    }
-    catch (...) {
-        return 0x9F;
-    }
+int CarPool::updateCar(const std::string &id, const Car &new_car) {
+	try {
+		if (removeCar(id)){
+			MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Update Car] \n- Original Car ID: " + id + "\n- New Car ID: " + new_car.getId() + "\n- New Car Owner: " + new_car.getOwner() + "\n- New Car Type: " + new_car.getType() + "\n- New Car Color: " + new_car.getColor() + "\n- New Car Year: " + std::to_string(new_car.getYear()) + "\n- New Car Image Path: " + new_car.getImagePath() + "\n- Status: 0x90");
+			return 0x90;}
+		if (addCar(new_car)){
+			MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Update Car] \n- Original Car ID: " + id + "\n- New Car ID: " + new_car.getId() + "\n- New Car Owner: " + new_car.getOwner() + "\n- New Car Type: " + new_car.getType() + "\n- New Car Color: " + new_car.getColor() + "\n- New Car Year: " + std::to_string(new_car.getYear()) + "\n- New Car Image Path: " + new_car.getImagePath() + "\n- Status: 0x91");
+			return 0x91;}
+			MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::DEBUG, "[CarPool Update Car] \n- Original Car ID: " + id + "\n- New Car ID: " + new_car.getId() + "\n- New Car Owner: " + new_car.getOwner() + "\n- New Car Type: " + new_car.getType() + "\n- New Car Color: " + new_car.getColor() + "\n- New Car Year: " + std::to_string(new_car.getYear()) + "\n- New Car Image Path: " + new_car.getImagePath() + "\n- Status: 0");
+		return 0;
+	}
+	catch (...) {
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Update Car] \n- Original Car ID: " + id + "\n- New Car ID: " + new_car.getId() + "\n- New Car Owner: " + new_car.getOwner() + "\n- New Car Type: " + new_car.getType() + "\n- New Car Color: " + new_car.getColor() + "\n- New Car Year: " + std::to_string(new_car.getYear()) + "\n- New Car Image Path: " + new_car.getImagePath() + "\n- Status: 0x9F");
+		return 0x9F;
+	}
 }
 
 /**
@@ -337,11 +370,14 @@ int CarPool::updateCar(const std::string& id, const Car& new_car) {
  * @param id The ID of the car to retrieve.
  * @return A CarPool object containing the car with the specified ID, or an empty CarPool object if the car is not found.
  */
-CarPool CarPool::getCarbyId(const std::string& id) const {
-    CarPool cars;
-    if (carpool_byid.find(id) != carpool_byid.end())
-        cars.addCar(carpool_byid.at(id));
-    return cars;
+CarPool CarPool::getCarbyId(const std::string &id) const {
+	CarPool cars;
+	if (carpool_byid.find(id) != carpool_byid.end())
+		cars.addCar(carpool_byid.at(id));
+	std::stringstream ss;
+	cars.save(ss);
+	MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::DEBUG, "[CarPool Get Car by ID] \n- Car ID: " + id + "\n- Result: " + ss.str());
+	return cars;
 }
 
 /**
@@ -350,11 +386,15 @@ CarPool CarPool::getCarbyId(const std::string& id) const {
  * @param color The color of the cars to retrieve.
  * @return A CarPool object containing all cars with the specified color.
  */
-CarPool CarPool::getCarbyColor(const std::string& color) const {
-    CarPool cars;
-    auto it_bg = carpool_bycolor.lower_bound(color), it_ed = carpool_bycolor.upper_bound(color);
-    for (auto it = it_bg; it != it_ed; it++) cars.addCar(it->second);
-    return cars;
+CarPool CarPool::getCarbyColor(const std::string &color) const {
+	CarPool cars;
+	auto it_bg = carpool_bycolor.lower_bound(color), it_ed = carpool_bycolor.upper_bound(color);
+	for (auto it = it_bg; it != it_ed; it++)
+		cars.addCar(it->second);
+	std::stringstream ss;
+	cars.save(ss);
+	MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::DEBUG, "[CarPool Get Car by Color] \n- Car Color: " + color + "\n- Result: " + ss.str());
+	return cars;
 }
 
 /**
@@ -363,11 +403,15 @@ CarPool CarPool::getCarbyColor(const std::string& color) const {
  * @param owner The owner of the cars to retrieve.
  * @return A CarPool object containing all cars owned by the specified owner.
  */
-CarPool CarPool::getCarbyOwner(const std::string& owner) const {
-    CarPool cars;
-    auto it_bg = carpool_byowner.lower_bound(owner), it_ed = carpool_byowner.upper_bound(owner);
-    for (auto it = it_bg; it != it_ed; it++) cars.addCar(it->second);
-    return cars;
+CarPool CarPool::getCarbyOwner(const std::string &owner) const {
+	CarPool cars;
+	auto it_bg = carpool_byowner.lower_bound(owner), it_ed = carpool_byowner.upper_bound(owner);
+	for (auto it = it_bg; it != it_ed; it++)
+		cars.addCar(it->second);
+	std::stringstream ss;
+	cars.save(ss);
+	MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::DEBUG, "[CarPool Get Car by Owner] \n- Car Owner: " + owner + "\n- Result: " + ss.str());
+	return cars;
 }
 
 /**
@@ -376,11 +420,15 @@ CarPool CarPool::getCarbyOwner(const std::string& owner) const {
  * @param type The type of cars to retrieve.
  * @return A CarPool object containing all cars of the specified type.
  */
-CarPool CarPool::getCarbyType(const std::string& type) const {
-    CarPool cars;
-    auto it_bg = carpool_bytype.lower_bound(type), it_ed = carpool_bytype.upper_bound(type);
-    for (auto it = it_bg; it != it_ed; it++) cars.addCar(it->second);
-    return cars;
+CarPool CarPool::getCarbyType(const std::string &type) const {
+	CarPool cars;
+	auto it_bg = carpool_bytype.lower_bound(type), it_ed = carpool_bytype.upper_bound(type);
+	for (auto it = it_bg; it != it_ed; it++)
+		cars.addCar(it->second);
+	std::stringstream ss;
+	cars.save(ss);
+	MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::DEBUG, "[CarPool Get Car by Type] \n- Car Type: " + type + "\n- Result: " + ss.str());
+	return cars;
 }
 
 /**
@@ -392,31 +440,34 @@ CarPool CarPool::getCarbyType(const std::string& type) const {
  * @param type The type of the car to search for.
  * @return The car that matches the specified criteria.
  */
-CarPool CarPool::getCar(const std::string& id, const std::string& color, const std::string& owner, const std::string& type) const {
-    std::string _id = id, _color = color, _type = type, _owner = owner;
-    CarPool cars = *this;
-    begin:
-    if (_id != "") {
-        cars = cars.getCarbyId(_id);
-        _id = "";
-        goto begin;
-    }
-    else if (_owner != "") {
-        cars = cars.getCarbyOwner(_owner);
-        _owner = "";
-        goto begin;
-    }
-    else if (_color != "") {
-        cars = cars.getCarbyColor(_color);
-        _color = "";
-        goto begin;
-    }
-    else if (_type != "") {
-        cars = cars.getCarbyType(_type);
-        _type = "";
-        goto begin;
-    }
-    else return cars;
+CarPool CarPool::getCar(const std::string &id,
+						const std::string &color,
+						const std::string &owner,
+						const std::string &type) const {
+	std::string _id = id, _color = color, _type = type, _owner = owner;
+	CarPool cars = *this;
+	while (!_id.empty() || !_color.empty() || !_type.empty() || !_owner.empty()) {
+		if (_id != "") {
+			cars = cars.getCarbyId(_id);
+			_id = "";
+		}
+		if (_owner != "") {
+			cars = cars.getCarbyOwner(_owner);
+			_owner = "";
+		}
+		if (_color != "") {
+			cars = cars.getCarbyColor(_color);
+			_color = "";
+		}
+		if (_type != "") {
+			cars = cars.getCarbyType(_type);
+			_type = "";
+		}
+	}
+	std::stringstream ss;
+	cars.save(ss);
+	MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::DEBUG, "[CarPool Get Car] \n- Car ID: " + id + "\n- Car Owner: " + owner + "\n- Car Type: " + type + "\n- Car Color: " + color + "\n- Result: " + ss.str());
+	return cars;
 }
 
 /**
@@ -427,7 +478,7 @@ CarPool CarPool::getCar(const std::string& id, const std::string& color, const s
  * @return The number of cars in the carpool.
  */
 size_t CarPool::size() const {
-    return sz;
+	return sz;
 }
 
 /**
@@ -438,7 +489,7 @@ size_t CarPool::size() const {
  * @return True if the carpool is empty, otherwise false.
  */
 bool CarPool::empty() const {
-    return sz == 0;
+	return sz == 0;
 }
 
 /**
@@ -449,16 +500,19 @@ bool CarPool::empty() const {
  * @return 0 if the carpool data is cleared successfully, 0xAF if an exception occurs.
  */
 int CarPool::clear() {
-    try {
-        carpool_byid.clear();
-        carpool_bycolor.clear();
-        carpool_bytype.clear();
-        sz = 0;
-        return 0;
-    }
-    catch (...) {
-        return 0xAF;
-    }
+	try {
+		carpool_byid.clear();
+		carpool_bycolor.clear();
+		carpool_bytype.clear();
+		carpool_byowner.clear();
+		sz = 0;
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::DEBUG, "[CarPool Clear] \n- Status: 0");
+		return 0;
+	}
+	catch (...) {
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Clear] \n- Status: 0xAF");
+		return 0xAF;
+	}
 }
 
 /**
@@ -476,34 +530,46 @@ int CarPool::clear() {
  *         - 0xB5: If there is an error while adding a car to the CarPool object.
  *         - 0xBF: If an unknown exception occurs while loading the car data.
  */
-int CarPool::load(std::istream& is) {
-    if (!is) return 0xB0;
-    try {
-        if(clear() != 0) return 0xB1;
-        json load_json_obj = json::parse(is);
-        for (auto it = load_json_obj.begin(); it != load_json_obj.end(); it++) {
-            if (!it.value().is_object()) return 0xB2;
-            if (!it.value().contains("id") || !it.value().contains("type") || !it.value().contains("owner") || \
-                !it.value().contains("color") || !it.value().contains("year") || !it.value().contains("img_path")) 
-                return 0xB3;
-            if (!it.value()["id"].is_string() || !it.value()["type"].is_string() || !it.value()["owner"].is_string() || \
-                !it.value()["color"].is_string() || !it.value()["year"].is_number_integer() || !it.value()["img_path"].is_string())
-                return 0xB4;
-            Car car(
-                std::string(it.value()["id"]), 
-                std::string(it.value()["type"]), 
-                std::string(it.value()["owner"]), 
-                std::string(it.value()["color"]), 
-                int(it.value()["year"]), 
-                std::string(it.value()["img_path"])
-            );
-            if (addCar(car)) return 0xB5;
-        }
-        return 0;
-    }
-    catch (...) {
-        return 0xBF;
-    }
+int CarPool::load(std::istream &is) {
+	if (!is){
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Load] \n- Status: 0xB0");
+		return 0xB0;}
+	try {
+		if (clear() != 0){
+			MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Load] \n- Status: 0xB1");
+			return 0xB1;}
+		json load_json_obj = json::parse(is);
+		for (auto it = load_json_obj.begin(); it != load_json_obj.end(); it++) {
+			if (!it.value().is_object()){
+				MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Load] \n- Status: 0xB2");
+				return 0xB2;}
+			if (!it.value().contains("id") || !it.value().contains("type") ||
+				!it.value().contains("owner") || !it.value().contains("color") ||
+				!it.value().contains("year") || !it.value().contains("img_path")){
+					MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Load] \n- Status: 0xB3");
+				return 0xB3;}
+			if (!it.value()["id"].is_string() || !it.value()["type"].is_string() ||
+				!it.value()["owner"].is_string() || !it.value()["color"].is_string() ||
+				!it.value()["year"].is_number_integer() || !it.value()["img_path"].is_string()){
+					MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Load] \n- Status: 0xB4");
+				return 0xB4;}
+			Car car(std::string(it.value()["id"]),
+					std::string(it.value()["type"]),
+					std::string(it.value()["owner"]),
+					std::string(it.value()["color"]),
+					int(it.value()["year"]),
+					std::string(it.value()["img_path"]));
+			if (addCar(car)){
+				MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Load] \n- Status: 0xB5");
+				return 0xB5;}
+		}
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::DEBUG, "[CarPool Load] \n- Status: 0");
+		return 0;
+	}
+	catch (...) {
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Load] \n- Status: 0xBF");
+		return 0xBF;
+	}
 }
 
 /**
@@ -514,26 +580,30 @@ int CarPool::load(std::istream& is) {
  *         - 0xC0: If the output stream is not valid.
  *         - 0xCF: If an unknown exception occurs during the saving process.
  */
-int CarPool::save(std::ostream& os) const {
-    if (!os) return 0xC0;
-    try {
-        json save_json_obj;
-        for (auto it = carpool_byid.begin(); it != carpool_byid.end(); it++) {
-            json car_json_obj;
-            car_json_obj["id"] = it->second.getId();
-            car_json_obj["type"] = it->second.getType();
-            car_json_obj["owner"] = it->second.getOwner();
-            car_json_obj["color"] = it->second.getColor();
-            car_json_obj["year"] = it->second.getYear();
-            car_json_obj["img_path"] = it->second.getImagePath();
-            save_json_obj[it->first] = car_json_obj;
-        }
-        os << save_json_obj.dump(4);
-        return 0;
-    }
-    catch (...) {
-        return 0xCF;
-    }
+int CarPool::save(std::ostream &os) const {
+	if (!os){
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Save] \n- Status: 0xC0");
+		return 0xC0;}
+	try {
+		json save_json_obj;
+		for (auto it = carpool_byid.begin(); it != carpool_byid.end(); it++) {
+			json car_json_obj;
+			car_json_obj["id"] = it->second.getId();
+			car_json_obj["type"] = it->second.getType();
+			car_json_obj["owner"] = it->second.getOwner();
+			car_json_obj["color"] = it->second.getColor();
+			car_json_obj["year"] = it->second.getYear();
+			car_json_obj["img_path"] = it->second.getImagePath();
+			save_json_obj[it->first] = car_json_obj;
+		}
+		os << save_json_obj.dump(4);
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::DEBUG, "[CarPool Save] \n- Status: 0");
+		return 0;
+	}
+	catch (...) {
+		MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::ERROR, "[CarPool Save] \n- Status: 0xCF");
+		return 0xCF;
+	}
 }
 
 /**
@@ -544,9 +614,11 @@ int CarPool::save(std::ostream& os) const {
  * @return A vector of Car objects representing the cars in the carpool.
  */
 std::vector<Car> CarPool::list() const {
-    std::vector<Car> cars;
-    for (auto it = carpool_byid.begin(); it != carpool_byid.end(); it++) cars.push_back(it->second);
-    return cars;
+	std::vector<Car> cars;
+	for (auto it = carpool_byid.begin(); it != carpool_byid.end(); it++)
+		cars.push_back(it->second);
+	MyLogger::log("carinfo-manager-logger", MyLogger::LOG_LEVEL::DEBUG, "[CarPool List] \n- Status: 0");
+	return cars;
 }
 
 /**
@@ -557,8 +629,10 @@ std::vector<Car> CarPool::list() const {
  * @param cp The CarPool object to compare with.
  * @return True if the CarPool objects are equal, otherwise false.
  */
-bool CarPool::operator == (const CarPool& cp) const {
-    return sz == cp.sz && cp.carpool_byid == cp.carpool_byid && carpool_bycolor == cp.carpool_bycolor && carpool_bytype == cp.carpool_bytype;
+bool CarPool::operator==(const CarPool &cp) const {
+	return sz == cp.sz && cp.carpool_byid == cp.carpool_byid &&
+		   carpool_bycolor == cp.carpool_bycolor && carpool_bytype == cp.carpool_bytype &&
+		   carpool_byowner == cp.carpool_byowner;
 }
 
 /**
@@ -569,8 +643,10 @@ bool CarPool::operator == (const CarPool& cp) const {
  * @param cp The CarPool object to compare with.
  * @return True if the CarPool objects are not equal, otherwise false.
  */
-bool CarPool::operator != (const CarPool& cp) const {
-    return sz != cp.sz || cp.carpool_byid != cp.carpool_byid || carpool_bycolor != cp.carpool_bycolor || carpool_bytype != cp.carpool_bytype;
+bool CarPool::operator!=(const CarPool &cp) const {
+	return sz != cp.sz || cp.carpool_byid != cp.carpool_byid ||
+		   carpool_bycolor != cp.carpool_bycolor || carpool_bytype != cp.carpool_bytype ||
+		   carpool_byowner != cp.carpool_byowner;
 }
 
 /**
@@ -581,10 +657,11 @@ bool CarPool::operator != (const CarPool& cp) const {
  * @param cp The CarPool object to compare with.
  * @return True if the size of the carpool is less than the size of the carpool in the provided CarPool object, otherwise false.
  */
-CarPool& CarPool::operator = (const CarPool& cp) {
-    sz = cp.sz;
-    carpool_byid = cp.carpool_byid;
-    carpool_bycolor = cp.carpool_bycolor;
-    carpool_bytype = cp.carpool_bytype;
-    return *this;
+CarPool &CarPool::operator=(const CarPool &cp) {
+	sz = cp.sz;
+	carpool_byid = cp.carpool_byid;
+	carpool_bycolor = cp.carpool_bycolor;
+	carpool_bytype = cp.carpool_bytype;
+	carpool_byowner = cp.carpool_byowner;
+	return *this;
 }
