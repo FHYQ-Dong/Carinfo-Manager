@@ -127,7 +127,7 @@ DisplayCarInfoWindow::DisplayCarInfoWindow(QWidget *parent,
 		itemTextLayout->setSpacing(10);
 		itemPicLayout->setContentsMargins(0, 0, 0, 0);
 
-		QLabel *itemIdLabel = new QLabel(QString::fromStdString("车牌号： \u3000" + car.getId()),
+		QLabel *itemIdLabel = new QLabel(QString::fromStdString("车牌号：\u3000" + car.getId()),
 										 itemTextWidget),
 			   *itemOwnerLabel = new QLabel(QString::fromStdString("车主：\u3000" + car.getOwner()),
 											itemTextWidget),

@@ -7,8 +7,7 @@
  * The BasicPool class is an abstract class that provides a basic interface for managing a collection of objects.
  * 
  * @author donghy23@mails.tsinghua.edu.cn
- * @version
- *  1.0
+ * @version 1.0
  */
 
 #pragma once

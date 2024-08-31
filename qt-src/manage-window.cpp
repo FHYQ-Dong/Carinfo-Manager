@@ -73,7 +73,7 @@ ManageWindow::ManageWindow(QWidget *parent,
         connect(changePasswordButton, &QPushButton::clicked, this, &ManageWindow::changePassword);
 
 		logoutButton = new QPushButton("注销", this);
-		logoutButton->setGeometry(50, 180, 200, 30);
+		logoutButton->setGeometry(155, 260, 95, 30);
 		connect(logoutButton, &QPushButton::clicked, this, &ManageWindow::logout);
 	}
 }
